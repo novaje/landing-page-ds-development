@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\website;
 
+use App\Models\GaleriWebsite;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class GaleriWebsiteController extends Controller
      */
     public function dtGaleri()
     {
-        $dt_galeri = DataGaleri::all();
+        $dt_galeri = GaleriWebsite::all();
         $data = [
             'dt_galeri' => $dt_galeri
         ];
@@ -33,7 +34,7 @@ class GaleriWebsiteController extends Controller
         $upload_gambar = $request->file('upload_gambar');
         $upload_gambar->move(public_path('images'), $upload_gambar->getClientOriginalName());
 
-        DataGaleri::create([
+        GaleriWebsite::create([
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
             'upload_gambar' => $upload_gambar->getClientOriginalName(),
@@ -47,7 +48,7 @@ class GaleriWebsiteController extends Controller
      */
     public function editGaleri($id)
     {
-        $edit_galeri = DataGaleri::find($id);
+        $edit_galeri = GaleriWebsite::find($id);
         $data = [
             'edit_galeri' => $edit_galeri
         ];
@@ -59,7 +60,7 @@ class GaleriWebsiteController extends Controller
      */
     public function updateGaleri(Request $request, $id)
     {
-        $update_galeri = DataGaleri::find($id);
+        $update_galeri = GaleriWebsite::find($id);
         $request -> validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string|max:255',
@@ -82,7 +83,7 @@ class GaleriWebsiteController extends Controller
      */
     public function destroyGaleri($id)
     {
-        $delete_galeri = DataGaleri::find($id);
+        $delete_galeri = GaleriWebsite::find($id);
         $delete_galeri->delete();
 
         return redirect()->route('galeri')->with('success', 'Data Galeri Berhasil Dihapus');        

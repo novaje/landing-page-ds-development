@@ -14,7 +14,7 @@ class DataPesananController extends Controller
         $lastData = DataPesanan::orderBy('id_pesanan', 'desc')->first();
 
         if ($lastData) {
-            $lastKode = $lastData->kode;
+            $lastKode = $lastData->kode_pesanan;
             $lastNumber = (int) substr($lastKode, 2);
             $newNumber = $lastNumber + 1;
         } else {
@@ -48,10 +48,10 @@ class DataPesananController extends Controller
             'kode_pesanan' => 'required',
             'nama_team' => 'required|string|max:255',
             'jenis_pesanan' => 'required|string|max:255',
-            'qty_pesanan' => 'required|integer',
-            'total_modal_pesanan' => 'required|numeric',
-            'total_jual' => 'required|numeric',
-            'sisa' => 'required|numeric',
+            'qty_pesanan' => 'required|integer|min:1',
+            'total_modal_pesanan' => 'required|numeric|min:0|max:999999999999',
+            'total_jual' => 'required|numeric|min:0|max:999999999999',
+            'sisa' => 'required|numeric|min:0|max:999999999999',
             'status_pesanan' => 'required|string|max:255'
         ]);
 
@@ -98,10 +98,10 @@ class DataPesananController extends Controller
             'kode_pesanan' => 'required',
             'nama_team' => 'required|string|max:255',
             'jenis_pesanan' => 'required|string|max:255',
-            'qty_pesanan' => 'required|integer',
-            'total_modal_pesanan' => 'required|numeric',
-            'total_jual' => 'required|numeric',
-            'sisa' => 'required|numeric',
+            'qty_pesanan' => 'required|integer|min:1',
+            'total_modal_pesanan' => 'required|numeric|min:0|max:999999999999',
+            'total_jual' => 'required|numeric|min:0|max:999999999999',
+            'sisa' => 'required|numeric|min:0|max:999999999999',
             'status_pesanan' => 'required|string|max:255'
         ]);
 

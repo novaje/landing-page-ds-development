@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\website;
 
 use App\Http\Controllers\Controller;
+use App\Models\BerandaWebsite;
 use Illuminate\Http\Request;
 
 class BerandaWebsiteController extends Controller
@@ -12,7 +13,7 @@ class BerandaWebsiteController extends Controller
      */
     public function dtBeranda()
     {
-        $dt_beranda = DataBeranda::all();
+        $dt_beranda = BerandaWebsite::all();
         $data = [
             'dt_beranda' => $dt_beranda
         ];
@@ -34,7 +35,7 @@ class BerandaWebsiteController extends Controller
         $upload_gambar = $request->file('upload_gambar');
         $upload_gambar->move(public_path('images'), $upload_gambar->getClientOriginalName());
 
-        DataBeranda::create([
+        BerandaWebsite::create([
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
             'upload_gambar' => $upload_gambar->getClientOriginalName(),
@@ -48,7 +49,7 @@ class BerandaWebsiteController extends Controller
      */
     public function editBeranda($id)
     {
-        $edit_beranda = DataBeranda::find($id);
+        $edit_beranda = BerandaWebsite::find($id);
         $data = [
             'title' => 'Edit Data Beranda',
             'edit_beranda' => $edit_beranda,
@@ -61,7 +62,7 @@ class BerandaWebsiteController extends Controller
      */
     public function updateBeranda(Request $request, string $id)
     {
-        $update_beranda = DataBeranda::find($id);
+        $update_beranda = BerandaWebsite::find($id);
         $request -> validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string|max:255',
@@ -84,7 +85,7 @@ class BerandaWebsiteController extends Controller
      */
     public function destroyBeranda(string $id)
     {
-        $delete_beranda = DataBeranda::find($id);
+        $delete_beranda = BerandaWebsite::find($id);
         $delete_beranda->delete();
 
         return redirect()->route('beranda')->with('success', 'Data Beranda Berhasil Dihapus');

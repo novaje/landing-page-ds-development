@@ -1,310 +1,281 @@
-@extends('admin.layouts.dashboard', ['skipComponents' => true])
-
-@section('title', 'Beranda - DS Sport Apparel')
-
+@extends('admin.layouts.dashboard')
+@section('title', 'PRODUK DAN STOK')
 @section('content')
-    <!-- Success Message -->
-    @if(session('success'))
-    <div class="bg-green-500/10 border border-green-500/30 text-green-400 px-4 py-3 rounded-xl flex items-center gap-3">
-        <i class="fa-solid fa-circle-check"></i>
-        <span>{{ session('success') }}</span>
-    </div>
-    @endif
 
-    <!-- Table Card -->
-    <div class="bg-premium-charcoal border border-premium-border rounded-2xl p-6">
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h2 class="text-lg font-bold text-white">Beranda</h2>
-            </div>
-            <button onclick="openModal()" class="px-5 py-2.5 rounded-xl bg-white text-black font-bold text-sm shadow hover:bg-gray-100 transition-colors flex items-center gap-2">
-                <i class="fa-solid fa-plus"></i>
-                Tambah Pesanan
+<div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 class="page-title" style="margin-bottom: 0;">Data Beranda Website</h1>
+
+        <button class="btn btn-primary" onclick="openModal()">
+            <i class="fa-solid fa-plus"></i>
+            Tambah Data Beranda
+        </button>
+    </div>
+
+    <div class="table-container">
+        <table id="berandaTable" class="display">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Judul</th>
+                    <th>Deskripsi</th>
+                    <th>Gambar</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach($dt_beranda as $index => $beranda)
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $beranda->judul }}</td>
+                        <td>{{ $beranda->deskripsi }}</td>
+                        <td>
+                            @if($beranda->upload_gambar)
+                                <img
+                                    src="{{ asset('images/' . $beranda->upload_gambar) }}"
+                                    alt="{{ $beranda->judul }}"
+                                    style="width: 100px; height: 70px; object-fit: cover; border-radius: 5px;"
+                                >
+                            @else
+                                Tidak ada gambar
+                            @endif
+                        </td>
+
+                        <td>
+                            {{-- Tombol edit dapat ditambahkan jika route edit tersedia --}}
+
+                            <form
+                                action="{{ route('beranda.destroy', $beranda->id) }}"
+                                method="POST"
+                                style="display: inline;"
+                                onsubmit="return confirm('Hapus data beranda ini?')"
+                            >
+                                @csrf
+                                @method('DELETE')
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger"
+                                    style="padding: 4px 8px;"
+                                >
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Tambah Data Beranda -->
+<div id="modal-tambah-pesanan" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Tambah Data Beranda</h3>
+
+            <button class="modal-close" onclick="closeModal()">
+                &times;
             </button>
         </div>
 
-        <!-- DataTable -->
-        <div class="overflow-x-auto" id="table-wrapper" style="display: none;">
-            <table id="berandaTable" class="w-full">
-                <thead>
-                    <tr class="bg-premium-black border-b border-premium-border">
-                        <th class="p-3 text-left text-xs text-white">No</th>
-                        <th class="p-3 text-left text-xs text-white">Judul</th>
-                        <th class="p-3 text-left text-xs text-white">Deskripsi</th>
-                        <th class="p-3 text-left text-xs text-white">Gambar</th>
-                        <th class="p-3 text-left text-xs text-white">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($dtBeranda as $index => $data)
-                    <tr class="border-b border-premium-border hover:bg-premium-black">
-                        <td class="p-3 text-sm text-white">{{ $index + 1 }}</td>
-                        <td class="p-3 text-sm text-white">{{ $data->judul }}</td>
-                        <td class="p-3 text-sm text-white">{{ $data->deskripsi }}</td>
-                        <td class="p-3 text-sm text-white">{{ $data->upload_gambar }}</td>
-                        <td class="p-3 text-sm text-white">
-                            <div class="flex gap-2">
-                                <a href="{{ route('datapesanan.edit', $pesanan->id) }}" class="px-2 py-1 bg-blue-500 text-white rounded text-xs">Edit</a>
-                                <form action="{{ route('datapesanan.destroy', $pesanan->id) }}" method="POST" onsubmit="return confirm('Hapus?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="px-2 py-1 bg-red-500 text-white rounded text-xs">Hapus</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        <form
+            action="{{ route('beranda.store') }}"
+            method="POST"
+            enctype="multipart/form-data"
+        >
+            @csrf
+
+            <div class="modal-body">
+    <div class="form-grid">
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="judul">Judul</label>
+            <input
+                type="text"
+                id="judul"
+                name="judul"
+                placeholder="Masukkan judul beranda"
+                maxlength="255"
+                required
+            >
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="deskripsi">Deskripsi</label>
+            <textarea
+                id="deskripsi"
+                name="deskripsi"
+                placeholder="Masukkan deskripsi beranda"
+                maxlength="255"
+                required
+            ></textarea>
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="upload_gambar">Upload Gambar</label>
+            <input
+                type="file"
+                id="upload_gambar"
+                name="upload_gambar"
+                accept=".jpeg,.jpg,.png,.gif,.svg"
+                required
+            >
+            <small>Format: JPEG, JPG, PNG, GIF, atau SVG. Maksimal 2 MB.</small>
         </div>
     </div>
+</div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    onclick="closeModal()"
+                >
+                    Batal
+                </button>
 
-    <!-- Modal Tambah Pesanan -->
-    <div id="modal-tambah-pesanan" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="bg-premium-charcoal border border-premium-border rounded-2xl w-full max-w-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between pb-4 border-b border-premium-border">
-                <h3 class="font-bold text-white text-base">Tambah Data</h3>
-                <button onclick="closeModal()" class="text-premium-lightgray hover:text-white">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                <button type="submit" class="btn btn-primary">
+                    Simpan
                 </button>
             </div>
-            <form action="{{ route('datapesanan.store') }}" method="POST" class="space-y-4 pt-4">
-                @csrf
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-premium-lightgray mb-1">Tanggal Pesanan</label>
-                        <input type="date" name="tgl_pesanan" required
-                            class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-premium-lightgray mb-1">Kode Pesanan</label>
-                        <input type="text" name="kode_pesanan" value="{{ $kode_pesanan }}" readonly
-                            class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none opacity-60">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-premium-lightgray mb-1">Nama Team</label>
-                    <input type="text" name="nama_team" placeholder="Contoh: Real Madrid" required
-                        class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-premium-lightgray mb-1">Jenis Pesanan</label>
-                    <select name="jenis_pesanan" required
-                        class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                        <option value="">Pilih Jenis Pesanan</option>
-                        <option value="Jersey">Jersey</option>
-                        <option value="Jersey Atasan">Jersey Atasan</option>
-                        <option value="Jersey Setelan">Jersey Setelan</option>
-                        <option value="Trackpants & Tracktop">Trackpants & Tracktop</option>
-                        <option value="Third Kit">Third Kit</option>
-                        <option value="Training Kit">Training Kit</option>
-                    </select>
-                </div>
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-premium-lightgray mb-1">Qty</label>
-                        <input type="number" name="qty_pesanan" placeholder="0" required
-                            class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-premium-lightgray mb-1">Total Modal</label>
-                        <input type="number" name="total_modal_pesanan" placeholder="0" required
-                            class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-premium-lightgray mb-1">Total Jual</label>
-                        <input type="number" name="total_jual" placeholder="0" required
-                            class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-premium-lightgray mb-1">Sisa</label>
-                        <input type="number" name="sisa" placeholder="0" required
-                            class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-premium-lightgray mb-1">Status Pesanan</label>
-                        <select name="status_pesanan" required
-                            class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                            <option value="">Pilih Status</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Proses">Proses</option>
-                            <option value="Selesai">Selesai</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-premium-border">
-                    <button type="button" onclick="closeModal()"
-                        class="px-4 py-2 border border-premium-border text-premium-lightgray rounded text-sm hover:text-white">Batal</button>
-                    <button type="submit"
-                        class="px-5 py-2 bg-white text-black rounded text-sm font-bold">Simpan Pesanan</button>
-                </div>
-            </form>
-        </div>
+        </form>
     </div>
+</div>
 
-    @if(isset($edit_pesanan))
-    <!-- Modal Edit Pesanan -->
-    <div id="modal-edit-pesanan" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="bg-premium-charcoal border border-premium-border rounded-2xl w-full max-w-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between pb-4 border-b border-premium-border">
-                <h3 class="font-bold text-white text-base">Edit Pesanan Custom</h3>
-                <a href="{{ route('datapesanan') }}" class="text-premium-lightgray hover:text-white">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </a>
-            </div>
-            <form action="{{ route('datapesanan.update', $edit_pesanan->id) }}" method="POST" class="space-y-4 pt-4">
-                @csrf
-                @method('PUT')
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-premium-lightgray mb-1">Tanggal Pesanan</label>
-                        <input type="date" name="tgl_pesanan" value="{{ $edit_pesanan->tgl_pesanan }}" required
-                            class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-premium-lightgray mb-1">Kode Pesanan</label>
-                        <input type="text" name="kode_pesanan" value="{{ $edit_pesanan->kode_pesanan }}" readonly
-                            class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none opacity-60">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-premium-lightgray mb-1">Nama Team</label>
-                    <input type="text" name="nama_team" value="{{ $edit_pesanan->nama_team }}" required
-                        class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-premium-lightgray mb-1">Jenis Pesanan</label>
-                    <select name="jenis_pesanan" required
-                        class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                        <option value="">Pilih Jenis Pesanan</option>
-                        <option value="Home Kit" {{ $edit_pesanan->jenis_pesanan == 'Home Kit' ? 'selected' : '' }}>Home Kit</option>
-                        <option value="Away Kit" {{ $edit_pesanan->jenis_pesanan == 'Away Kit' ? 'selected' : '' }}>Away Kit</option>
-                        <option value="Third Kit" {{ $edit_pesanan->jenis_pesanan == 'Third Kit' ? 'selected' : '' }}>Third Kit</option>
-                        <option value="Training Kit" {{ $edit_pesanan->jenis_pesanan == 'Training Kit' ? 'selected' : '' }}>Training Kit</option>
-                    </select>
-                </div>
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-premium-lightgray mb-1">Qty</label>
-                        <input type="number" name="qty_pesanan" value="{{ $edit_pesanan->qty_pesanan }}" required
-                            class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-premium-lightgray mb-1">Total Modal</label>
-                        <input type="number" name="total_modal_pesanan" value="{{ $edit_pesanan->total_modal_pesanan }}" required
-                            class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-premium-lightgray mb-1">Total Jual</label>
-                        <input type="number" name="total_jual" value="{{ $edit_pesanan->total_jual }}" required
-                            class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-premium-lightgray mb-1">Sisa</label>
-                        <input type="number" name="sisa" value="{{ $edit_pesanan->sisa }}" required
-                            class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-premium-lightgray mb-1">Status Pesanan</label>
-                        <select name="status_pesanan" required
-                            class="w-full bg-premium-black border border-premium-border rounded-xl px-4 py-2.5 text-sm text-white outline-none focus:border-white">
-                            <option value="">Pilih Status</option>
-                            <option value="Pending" {{ $edit_pesanan->status_pesanan == 'Pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="Proses" {{ $edit_pesanan->status_pesanan == 'Proses' ? 'selected' : '' }}>Proses</option>
-                            <option value="Selesai" {{ $edit_pesanan->status_pesanan == 'Selesai' ? 'selected' : '' }}>Selesai</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-premium-border">
-                    <a href="{{ route('datapesanan') }}"
-                        class="px-4 py-2 border border-premium-border text-premium-lightgray rounded text-sm hover:text-white">Batal</a>
-                    <button type="submit"
-                        class="px-5 py-2 bg-white text-black rounded text-sm font-bold">Update Pesanan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    @endif
-@endsection
-
-@section('scripts')
+@push('scripts')
 <script>
-    // Initialize DataTable
     $(document).ready(function() {
-        $('#berandaTable').DataTable({
-            pageLength: 10,
-            lengthMenu: [10, 25, 50, 100],
-            language: {
-                search: "Cari:",
-                lengthMenu: "Tampilkan _MENU_ data",
-                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                paginate: {
-                    first: "Pertama",
-                    last: "Terakhir",
-                    next: "Selanjutnya",
-                    previous: "Sebelumnya"
-                },
-                emptyTable: "Tidak ada data tersedia",
-                zeroRecords: "Tidak ada data yang cocok"
-            },
-            initComplete: function() {
-                $('#table-wrapper').fadeIn(200);
-            }
-        });
+        $('#berandaTable').DataTable();
     });
 
-    // Modal Functions
     function openModal() {
-        document.getElementById('modal-tambah-pesanan').classList.remove('hidden');
+        document.getElementById('modal-tambah-pesanan').style.display = 'block';
     }
 
     function closeModal() {
-        document.getElementById('modal-tambah-pesanan').classList.add('hidden');
+        document.getElementById('modal-tambah-pesanan').style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('modal-tambah-pesanan');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
     }
 </script>
 
 <style>
-    /* DataTable styling for premium theme */
-    #berandaTable_wrapper .dataTables_length select,
-    #berandaTable_wrapper .dataTables_filter input {
-        background-color: #1a1a1a;
-        border: 1px solid #2d2d2d;
-        color: #ffffff;
-        padding: 4px 8px;
-        border-radius: 4px;
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 12px;
+        font-family: inherit;
+        font-size: 14px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
     }
 
-    #berandaTable_wrapper .dataTables_length label,
-    #berandaTable_wrapper .dataTables_filter label {
-        color: #8a8a8a;
-        font-size: 0.875rem;
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+    .modal {
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
     }
 
-    #berandaTable_wrapper .dataTables_paginate .paginate_button {
-        color: #ffffff !important;
-        background: #1a1a1a !important;
-        border: 1px solid #2d2d2d !important;
-        border-radius: 4px;
-        margin: 0 2px;
+    .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        padding: 0;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 700px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
 
-    #berandaTable_wrapper .dataTables_paginate .paginate_button.current {
-        background: #ffffff !important;
-        color: #000000 !important;
-        font-weight: bold;
+    .modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
-    #berandaTable_wrapper .dataTables_paginate .paginate_button:hover {
-        background: #4a4a4a !important;
+    .modal-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: var(--charcoal);
     }
 
-    #berandaTable_wrapper .dataTables_info {
-        color: #8a8a8a;
-        font-size: 0.875rem;
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #777;
+    }
+
+    .modal-close:hover {
+        color: #333;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .form-group {
+        margin-bottom: 0;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+
+    .form-group input[readonly] {
+        background-color: #f9f9f9;
+        cursor: not-allowed;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
     }
 </style>
+@endpush
 @endsection

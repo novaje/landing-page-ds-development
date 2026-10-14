@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\website;
 
+use App\Models\TentangWebsite;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class TentangWebsiteController extends Controller
      */
     public function dtTentang()
     {
-        $dt_tentang = DataTentang::all();
+        $dt_tentang = TentangWebsite::all();
         $data = [
             'dt_tentang' => $dt_tentang
         ];
@@ -34,7 +35,7 @@ class TentangWebsiteController extends Controller
         $upload_gambar = $request->file('upload_gambar');
         $upload_gambar->move(public_path('images'), $upload_gambar->getClientOriginalName());
 
-        DataTentang::create([
+        TentangWebsite::create([
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
             'upload_gambar' => $upload_gambar->getClientOriginalName(),
@@ -48,7 +49,7 @@ class TentangWebsiteController extends Controller
      */
     public function editTentang($id)
     {
-        $edit_tentang = DataTentang::find($id);
+        $edit_tentang = TentangWebsite::find($id);
         $data = [
             'title' => 'Edit Data Tentang',
             'edit_tentang' => $edit_tentang
@@ -61,7 +62,7 @@ class TentangWebsiteController extends Controller
      */
     public function updateTentang(Request $request, $id)
     {
-        $update_tentang = DataTentang::find($id);
+        $update_tentang = TentangWebsite::find($id);
         $request -> validate([
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string|max:255',
@@ -84,7 +85,7 @@ class TentangWebsiteController extends Controller
      */
     public function destroyTentang(string $id)
     {
-        $delete_tentang = DataTentang::find($id);
+        $delete_tentang = TentangWebsite::find($id);
         $delete_tentang->delete();
 
         return redirect()->route('tentang')->with('success', 'Data Tentang Berhasil Dihapus');

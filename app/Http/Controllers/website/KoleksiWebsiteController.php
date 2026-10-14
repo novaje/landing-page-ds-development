@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\website;
 
+use App\Models\KoleksiWebsite;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class KoleksiWebsiteController extends Controller
      */
     public function dtKoleksi()
     {
-        $dt_koleksi = DataKoleksi::all();
+        $dt_koleksi = KoleksiWebsite::all();
         $data = [
             'dt_koleksi' => $dt_koleksi
         ];
@@ -34,7 +35,7 @@ class KoleksiWebsiteController extends Controller
         $upload_gambar = $request->file('upload_gambar');
         $upload_gambar->move(public_path('images'), $upload_gambar->getClientOriginalName());
 
-        DataKoleksi::create([
+        KoleksiWebsite::create([
             'judul' => $request->judul,
             'harga' => $request->harga,
             'deskripsi' => $request->deskripsi,
@@ -49,7 +50,7 @@ class KoleksiWebsiteController extends Controller
      */
     public function edit($id)
     {
-        $edit_koleksi = DataKoleksi::find($id);
+        $edit_koleksi = KoleksiWebsite::find($id);
         $data = [
             'title' => 'Edit Data Koleksi',
             'edit_koleksi' => $edit_koleksi
@@ -62,7 +63,7 @@ class KoleksiWebsiteController extends Controller
      */
     public function updateKoleksi(Request $request, $id)
     {
-        $update_koleksi = DataKoleksi::find($id);
+        $update_koleksi = KoleksiWebsite::find($id);
         $request -> validate([
             'judul' => 'required|string|max:255',
             'harga' => 'required|integer',
@@ -87,7 +88,7 @@ class KoleksiWebsiteController extends Controller
      */
     public function destroy($id)
     {
-        $delete_koleksi = DataKoleksi::find($id);
+        $delete_koleksi = KoleksiWebsite::find($id);
         $delete_koleksi->delete();
         return redirect()->route('koleksi')->with('success', 'Data Koleksi Berhasil Dihapus');
     }

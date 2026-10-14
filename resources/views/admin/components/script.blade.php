@@ -1,210 +1,129 @@
-<script>
-    // Toggle Sidebar Mobile
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        sidebar
-            .classList
-            .toggle('-translate-x-full');
-    }
+ <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-    // Generic Toggle Dropdown
-    function toggleDropdown(dropdownId, chevronId) {
-        const dropdown = document.getElementById(dropdownId);
-        const chevron = document.getElementById(chevronId);
-        dropdown
-            .classList
-            .toggle('hidden');
-        chevron
-            .classList
-            .toggle('rotate-180');
-    }
+    <script>
 
-    // Switch Tabs Function
-    function switchTab(tabName) {
-        const tabs = document.querySelectorAll('.tab-content');
-        tabs.forEach(tab => tab.classList.add('hidden'));
+        let cart = [];
 
-        const target = document.getElementById('tab-' + tabName);
-        if (target) 
-            target
-                .classList
-                .remove('hidden');
-        
-        const links = document.querySelectorAll('.nav-link');
-        links.forEach(link => {
-            link
-                .classList
-                .remove('bg-sport-dark', 'text-white', 'border', 'border-sport-border');
-            link
-                .classList
-                .add('text-sport-graytext');
-        });
+        // Tab Navigation Logic
+        $(document).ready(function() {
+            // Sidebar Menu Switching
+            $('.sidebar-menu li').on('click', function(e) {
+                const href = $(this).find('a').attr('href');
 
-        // Update Header Title
-        const titles = {
-            'dashboard': 'Dashboard Overview',
-            'products-satuan': 'Manajemen Produk Baju Bola - Satuan',
-            'products-custom': 'Manajemen Produk Baju Bola - Custom',
-            'categories': 'Kategori Klub & Liga',
-            'orders': 'Daftar Pesanan / Order',
-            'customers': 'Data Pelanggan DS Sport',
-            'settings': 'Pengaturan Toko'
-        };
-        document
-            .getElementById('page-title')
-            .innerText = titles[tabName] || 'Admin Dashboard';
+                // If menu has a real href (not #), let it navigate normally
+                if (href && href !== '#') {
+                    return; // Allow default navigation
+                }
 
-        if (window.innerWidth < 1024) {
-            document
-                .getElementById('sidebar')
-                .classList
-                .add('-translate-x-full');
-        }
-    }
+                e.preventDefault();
+                $('.sidebar-menu li').removeClass('active');
+                $(this).addClass('active');
 
-    // Modal Controls
-    function openProductModal() {
-        document
-            .getElementById('product-modal')
-            .classList
-            .remove('hidden');
-    }
-    function closeProductModal() {
-        document
-            .getElementById('product-modal')
-            .classList
-            .add('hidden');
-    }
-    function saveProduct(e) {
-        e.preventDefault();
-        closeProductModal();
-        showToast('Produk baju bola berhasil ditambahkan!');
-    }
+                const targetTab = $(this).data('target');
+                $('.tab-content').removeClass('active');
+                $('#' + targetTab).addClass('active');
 
-    // Toast Helper
-    function showToast(msg) {
-        const toast = document.getElementById('toast');
-        document
-            .getElementById('toast-message')
-            .innerText = msg;
-        toast
-            .classList
-            .remove('translate-y-20', 'opacity-0');
-        setTimeout(() => {
-            toast
-                .classList
-                .add('translate-y-20', 'opacity-0');
-        }, 3000);
-    }
+                // Update header title
+                const titleText = $(this).text().trim();
+                $('#headerTitle').text(titleText);
 
-    // Initialize DataTables and Chart.js on Window Load
-    $(document).ready(function () {
-        // Inisialisasi DataTables pada tabel pesanan - hanya jika elemen ada
-        if ($('#ordersTable').length) {
-            $('#ordersTable').DataTable({
-                "language": {
-                    "search": "Cari data:",
-                    "lengthMenu": "Tampilkan _MENU_ data per halaman",
-                    "zeroRecords": "Tidak ditemukan data yang sesuai",
-                    "info": "Menampilkan halaman _PAGE_ dari _PAGES_",
-                    "infoEmpty": "Tidak ada data tersedia",
-                    "infoFiltered": "(disaring dari _MAX_ total data)",
-                    "paginate": {
-                        "first": "Pertama",
-                        "last": "Terakhir",
-                        "next": "Selanjutnya",
-                        "previous": "Sebelumnya"
-                    }
-                },
-                "pageLength": 5,
-                "lengthMenu": [5, 10, 25, 50]
-            });
-        }
-
-        // Inisialisasi Chart.js - hanya jika elemen ada
-        if ($('#revenueChart').length) {
-            const ctx = document
-                .getElementById('revenueChart')
-                .getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [
-                        'Jan',
-                        'Feb',
-                        'Mar',
-                        'Apr',
-                        'Mei',
-                        'Jun',
-                        'Jul',
-                        'Agu',
-                        'Sep',
-                        'Okt',
-                        'Nov',
-                        'Des'
-                    ],
-                    datasets: [
-                        {
-                            label: 'Pendapatan (Rp)',
-                            data: [
-                                15000000,
-                                22000000,
-                                18000000,
-                                29000000,
-                                35000000,
-                                42000000,
-                                38000000,
-                                45000000,
-                                41000000,
-                                48250000,
-                                0,
-                                0
-                            ],
-                            borderColor: '#ffffff',
-                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.4,
-                            pointBackgroundColor: '#ffffff',
-                            pointBorderColor: '#000000',
-                            pointBorderWidth: 2,
-                            pointRadius: 4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: {
-                                color: '#1a1a1a'
-                            },
-                            ticks: {
-                                color: '#888888'
-                            }
-                        },
-                        y: {
-                            grid: {
-                                color: '#1a1a1a'
-                            },
-                            ticks: {
-                                color: '#888888',
-                                callback: function (value) {
-                                    return 'Rp ' + (
-                                        value / 1000000
-                                    ) + 'jt';
-                                }
-                            }
-                        }
-                    }
+                // Close mobile sidebar if open
+                if(window.innerWidth <= 768) {
+                    $('#sidebar').removeClass('show');
                 }
             });
+
+            // Mobile menu toggle
+            $('#menuToggle').on('click', function() {
+                $('#sidebar').toggleClass('show');
+            });
+
+            // Render POS Product Grid
+            renderPOSProducts();
+        });
+
+        function renderPOSProducts() {
+            const grid = $('#posProductGrid');
+            grid.empty();
+            posProducts.forEach(prod => {
+                grid.append(`
+                    <div class="pos-item-card" onclick="addToCart(${prod.id})">
+                        <img src="${prod.img}" alt="${prod.name}">
+                        <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 4px;">${prod.name}</div>
+                        <div style="color: var(--text-muted); font-size: 0.8rem;">Rp ${prod.price.toLocaleString('id-ID')}</div>
+                    </div>
+                `);
+            });
         }
-    });
-</script>
+
+        function addToCart(productId) {
+            const prod = posProducts.find(p => p.id === productId);
+            const existing = cart.find(item => item.id === productId);
+            if(existing) {
+                existing.qty++;
+            } else {
+                cart.push({ ...prod, qty: 1 });
+            }
+            updateCartDisplay();
+        }
+
+        function updateCartDisplay() {
+            const container = $('#cartItemsContainer');
+            container.empty();
+            if(cart.length === 0) {
+                container.html('<p style="color: var(--text-muted); text-align: center; margin-top: 40px;">Keranjang masih kosong</p>');
+                $('#cartTotal').text('Rp 0');
+                return;
+            }
+
+            let total = 0;
+            cart.forEach((item, index) => {
+                const subtotal = item.price * item.qty;
+                total += subtotal;
+                container.append(`
+                    <div class="cart-row">
+                        <div>
+                            <div>${item.name}</div>
+                            <div style="color: var(--text-muted); font-size: 0.75rem;">${item.qty} x Rp ${item.price.toLocaleString('id-ID')}</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-weight: 600;">Rp ${subtotal.toLocaleString('id-ID')}</span>
+                            <button class="btn btn-danger" style="padding: 2px 6px; font-size: 0.7rem;" onclick="removeFromCart(${index})"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                `);
+            });
+            $('#cartTotal').text('Rp ' + total.toLocaleString('id-ID'));
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+        }
+
+        function prosesBayar() {
+            if(cart.length === 0) {
+                // Using clean standard message box instead of alert()
+                const msgBox = document.createElement('div');
+                msgBox.innerHTML = '<div style="position:fixed; top:20px; right:20px; background:#ef4444; color:white; padding:12px 20px; border-radius:6px; z-index:1000; font-size:0.9rem;">Keranjang belanja masih kosong!</div>';
+                document.body.appendChild(msgBox);
+                setTimeout(() => msgBox.remove(), 2500);
+                return;
+            }
+            const successBox = document.createElement('div');
+            successBox.innerHTML = '<div style="position:fixed; top:20px; right:20px; background:#10b981; color:white; padding:12px 20px; border-radius:6px; z-index:1000; font-size:0.9rem;">Pembayaran berhasil diproses! Struk tercetak.</div>';
+            document.body.appendChild(successBox);
+            setTimeout(() => successBox.remove(), 2500);
+            cart = [];
+            updateCartDisplay();
+        }
+
+        function generateReport() {
+            const type = $('#reportType').val();
+            const reportBox = document.createElement('div');
+            reportBox.innerHTML = `<div style="position:fixed; top:20px; right:20px; background:#007bff; color:white; padding:12px 20px; border-radius:6px; z-index:1000; font-size:0.9rem;">Berhasil mengunduh Laporan ${type.toUpperCase()}!</div>`;
+            document.body.appendChild(reportBox);
+            setTimeout(() => reportBox.remove(), 2500);
+        }
+    </script>

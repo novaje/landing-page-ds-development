@@ -10,7 +10,7 @@ class BerandaWebsite extends Model
     use HasFactory;
 
     protected $table = 'tb_beranda_website';
-    protected $primaruyKey = 'id';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'judul',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\website;
 
+use App\Models\KlienWebsite;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class KlienWebsiteController extends Controller
      */
     public function dtKlien()
     {
-        $dt_klien = DataKlien::all();
+        $dt_klien = KlienWebsite::all();
         $data = [
             'dt_klien' => $dt_klien
         ];
@@ -29,7 +30,7 @@ class KlienWebsiteController extends Controller
             'nm_team' => 'required|string|max:255',
         ]);
 
-        DataKlien::create([
+        KlienWebsite::create([
             'nm_klien' => $request->nm_klien,
             'nm_team' => $request->nm_team,
         ]);
@@ -42,7 +43,7 @@ class KlienWebsiteController extends Controller
      */
     public function editKlien($id)
     {
-        $edit_klien = DataKlien::find($id);
+        $edit_klien = KlienWebsite::find($id);
         $data = [
             'title' => 'Edit Data Klien',
             'edit_klien' => $edit_klien
@@ -55,7 +56,7 @@ class KlienWebsiteController extends Controller
      */
     public function updateKlien(Request $request, $id)
     {
-        $update_klien = DataKlien::find($id);
+        $update_klien = KlienWebsite::find($id);
         $request -> validate([
             'nm_klien' => 'required|string|max:255',
             'nm_team' => 'required|string|max:255',
@@ -73,7 +74,7 @@ class KlienWebsiteController extends Controller
      */
     public function destroyKlien($id)
     {
-        $delete_klien = DataKlien::find($id);
+        $delete_klien = KlienWebsite::find($id);
         $delete_klien->delete();
 
         return redirect()->route('klien')->with('success', 'Data Klien Berhasil Dihapus');
