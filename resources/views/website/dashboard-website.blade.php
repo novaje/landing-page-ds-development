@@ -494,29 +494,29 @@
         }
 
         
-#about .jersey-card {
-    transform-style: preserve-3d;
-    will-change: transform;
-    transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
-}
+        #about .jersey-card {
+            transform-style: preserve-3d;
+            will-change: transform;
+            transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+        }
 
-#about .jersey-image {
-    display: block;
-    width: 100%;
-    object-fit: contain;
-    transform: translateZ(30px);
-    pointer-events: none;
-    user-select: none;
-}
+        #about .jersey-image {
+            display: block;
+            width: 100%;
+            object-fit: contain;
+            transform: translateZ(30px);
+            pointer-events: none;
+            user-select: none;
+        }
 
-#about .jersey-shine {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-}
+        #about .jersey-shine {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
 
 
         .feature-item {
@@ -1095,15 +1095,15 @@
     <!-- 1. HOME (HERO SECTION) -->
     <section id="home">
         <div class="hero-text">
-            <h1 data-key="heroTitle">DS Sport Apparel</h1>
-            <p data-key="heroDesc">Specialist Premium Custom Jersey yang menghadirkan solusi apparel untuk berbagai kebutuhan olahraga</p>
+            <h1 data-key="heroTitle">{{ $dt_beranda->judul ?? 'DS Sport Apparel' }}</h1>
+            <p data-key="heroDesc">{{ $dt_beranda->deskripsi ?? 'Specialist Premium Custom Jersey yang menghadirkan solusi apparel untuk berbagai kebutuhan olahraga' }}</p>
             <div class="hero-btns">
                 <a href="#collection" class="btn btn-primary" data-key="btnCollection">Lihat Koleksi</a>
                 <a href="#about" class="btn btn-outline" data-key="btnAbout">Pelajari Lebih</a>
             </div>
         </div>
         <div class="hero-img" data-key="imgPlaceholder">
-            <img src="{{ asset('template/image/bg-ds-1.jp') }}eg" alt="Hero Image">
+            <img src="{{ asset('images/' . $dt_beranda->upload_gambar) }}" alt="Hero Image">
         </div>
     </section>
 
