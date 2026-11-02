@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DS Sport Apparel — Management System V4</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            dark: '#0f172a',
+                            navy: '#1e293b',
+                            accent: '#3b82f6',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            rose: '#ef4444'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex flex-col md:flex-row">
+
+    <!-- Mobile Navigation Toggle Bar -->
+    <div class="md:hidden bg-slate-900 border-b border-slate-800 p-4 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/30">DS</div>
+            <span class="font-bold text-lg tracking-wide text-white">DS SPORT V4</span>
+        </div>
+        <button id="mobileMenuBtn" class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-64 bg-slate-900 border-r border-slate-800 flex flex-col z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+        <div class="p-6 border-b border-slate-800/80 hidden md:flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-blue-500/20">DS</div>
+            <div>
+                <h1 class="font-extrabold text-base tracking-wider text-white leading-tight">DS SPORT</h1>
+                <p class="text-xs text-blue-400 font-medium">Apparel System V4</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+            <a href="#dashboard" class="nav-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all text-blue-400 bg-blue-500/10 border border-blue-500/20">
+                <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+            </a>
+            <a href="#orders" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+                <i class="fa-solid fa-cart-shopping w-5"></i> Order & Transaksi
+            </a>
+            <a href="#piutang" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+                <i class="fa-solid fa-hand-holding-dollar w-5"></i> Monitoring Piutang
+            </a>
+            <a href="#cashflow" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+                <i class="fa-solid fa-money-bill-transfer w-5"></i> Arus Kas (Cash Flow)
+            </a>
+            <div class="pt-4 pb-2 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Pengaturan Data</div>
+            <a href="#master" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+                <i class="fa-solid fa-database w-5"></i> Master Data
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800/80">
+            <button onclick="resetDataToDefault()" class="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-rose-900/30 hover:text-rose-400 text-xs text-slate-400 transition-colors flex items-center justify-center gap-2 border border-slate-700/50">
+                <i class="fa-solid fa-rotate-left"></i> Reset Data Default
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+        <!-- Top App Bar -->
+        <header class="bg-slate-900/80 backdrop-blur border-b border-slate-800 px-6 py-4 sticky top-0 z-30 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <h2 id="pageTitle" class="text-xl font-bold text-white tracking-wide">Dashboard Analisis</h2>
+            </div>
+            
+            <div class="flex items-center gap-4 flex-wrap">
+                <!-- Global Month Filter -->
+                <div class="flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5">
+                    <i class="fa-solid fa-calendar-days text-slate-400 text-xs"></i>
+                    <span class="text-xs font-medium text-slate-400">Bulan:</span>
+                    <select id="globalMonthFilter" class="bg-transparent text-white text-xs font-semibold focus:outline-none cursor-pointer">
+                        <!-- Populated dynamically -->
+                    </select>
+                </div>
+
+                <!-- Margin Indicator Quick Legend -->
+                <div class="hidden lg:flex items-center gap-3 text-xs border-l border-slate-800 pl-4">
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> &#8805;25% Sehat</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> 15-24.9% Perhatikan</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> &lt;15% Rendah</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic View Containers -->
+        <div class="p-6 space-y-6 flex-1">
+
+            <!-- SECTION 1: DASHBOARD -->
+            <section id="view-dashboard" class="view-section space-y-6">
+                <!-- KPI Summary Cards Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-panel p-5 rounded-2xl border border-slate-800 relative overflow-hidden">
+                        <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Order Baru / Omzet Netto</div>
+                        <div id="kpiOmzet" class="text-2xl font-black text-white">Rp 0</div>
+                        <div class="mt-2 text-xs text-slate-400 flex items-center justify-between">
+                            <span>Total Pcs: <strong id="kpiTotalPcs" class="text-white">0</strong></span>
+                            <span>Nilai Paket: <span id="kpiNilaiPaket" class="text-slate-300">Rp 0</span></span>
+                        </div>
+                        <div class="absolute right-3 top-3 w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-5 rounded-2xl border border-slate-800 relative overflow-hidden">
+                        <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Total Cash In</div>
+                        <div id="kpiCashIn" class="text-2xl font-black text-emerald-400">Rp 0</div>
+                        <div class="mt-2 text-xs text-slate-400 flex justify-between">
+                            <span>DP: <span id="kpiDP" class="text-slate-300">Rp 0</span></span>
+                            <span>Pelunasan: <span id="kpiPelunasan" class="text-slate-300">Rp 0</span></span>
+                        </div>
+                        <div class="absolute right-3 top-3 w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-5 rounded-2xl border border-slate-800 relative overflow-hidden">
+                        <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Total HPP & Laba Kotor</div>
+                        <div id="kpiLabaKotor" class="text-2xl font-black text-indigo-400">Rp 0</div>
+                        <div class="mt-2 text-xs text-slate-400 flex justify-between">
+                            <span>HPP: <span id="kpiHPP" class="text-slate-300">Rp 0</span></span>
+                            <span>Margin Rata: <span id="kpiMarginAvg" class="font-bold text-white">0%</span></span>
+                        </div>
+                        <div class="absolute right-3 top-3 w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-5 rounded-2xl border border-slate-800 relative overflow-hidden">
+                        <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-1">Total Piutang Belum Lunas</div>
+                        <div id="kpiPiutang" class="text-2xl font-black text-amber-400">Rp 0</div>
+                        <div class="mt-2 text-xs text-slate-400 flex justify-between">
+                            <span id="kpiBelumLunasCount">0 Order Belum Lunas</span>
+                        </div>
+                        <div class="absolute right-3 top-3 w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pipeline Breakdown & Margin Health Status -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Pipeline Status Cards -->
+                    <div class="lg:col-span-2 glass-panel p-6 rounded-2xl border border-slate-800">
+                        <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-diagram-project text-blue-400"></i> Status Pipeline Production
+                        </h3>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="pipelineGrid">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Margin Health Status -->
+                    <div class="glass-panel p-6 rounded-2xl border border-slate-800 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-base font-bold text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-shield-halved text-emerald-400"></i> Indikator Kesehatan Margin
+                            </h3>
+                            <p class="text-xs text-slate-400 mb-4">Evaluasi rata-rata profitabilitas margin usaha pada bulan terpilih.</p>
+                            
+                            <div id="marginHealthCard" class="p-4 rounded-xl border flex items-center gap-4 bg-slate-900 border-slate-800">
+                                <div id="marginHealthIcon" class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-slate-800 text-slate-400">
+                                    <i class="fa-solid fa-gauge-simple-high"></i>
+                                </div>
+                                <div>
+                                    <div id="marginHealthStatus" class="font-extrabold text-lg text-white">Analisis Data...</div>
+                                    <div id="marginHealthDesc" class="text-xs text-slate-400">Menghitung rasio laba kotor</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-4 border-t border-slate-800/80 text-xs text-slate-400 space-y-1">
+                            <div class="flex justify-between"><span>Hijau (&#8805;25%)</span><span class="font-semibold text-emerald-400">SEHAT</span></div>
+                            <div class="flex justify-between"><span>Kuning (15% - 24.9%)</span><span class="font-semibold text-amber-400">PERHATIKAN</span></div>
+                            <div class="flex justify-between"><span>Merah (&lt;15%)</span><span class="font-semibold text-rose-400">RENDAH</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Order Table Preview -->
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-blue-400"></i> Transaksi Order Bulan Ini
+                        </h3>
+                        <a href="#orders" class="text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1">
+                            Lihat Semua Order <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-900/90 text-slate-400 uppercase font-bold text-[11px] border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">ID</th>
+                                    <th class="p-3">Tanggal</th>
+                                    <th class="p-3">Customer/Tim</th>
+                                    <th class="p-3">Paket</th>
+                                    <th class="p-3 text-center">Qty</th>
+                                    <th class="p-3 text-right">Total Order</th>
+                                    <th class="p-3 text-right">Piutang</th>
+                                    <th class="p-3 text-center">Margin</th>
+                                    <th class="p-3 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboardOrderTable" class="divide-y divide-slate-800/60">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: ORDER & TRANSAKSI -->
+            <section id="view-orders" class="view-section hidden space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Daftar Order & Transaksi Custom Jersey</h3>
+                        <p class="text-xs text-slate-400">Kelola pesanan, tambah add-on, pantau modal vendor, dan atur status produksi.</p>
+                    </div>
+                    <button onclick="openOrderModal()" class="py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-blue-600/30 transition-all">
+                        <i class="fa-solid fa-plus"></i> Tambah Order Baru
+                    </button>
+                </div>
+
+                <!-- Orders Table Container -->
+                <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+                    <div class="p-4 border-b border-slate-800 flex flex-wrap gap-3 justify-between items-center bg-slate-900/50">
+                        <div class="relative w-full sm:w-64">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                            <input type="text" id="orderSearchInput" onkeyup="filterOrderTable()" placeholder="Cari Order ID / Customer..." class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div class="flex items-center gap-2 text-xs text-slate-400">
+                            <span>Filter Status:</span>
+                            <select id="orderStatusFilter" onchange="filterOrderTable()" class="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none">
+                                <option value="ALL">Semua Status</option>
+                                <option value="DP Masuk">DP Masuk</option>
+                                <option value="Produksi">Produksi</option>
+                                <option value="QC">QC</option>
+                                <option value="Selesai">Selesai</option>
+                                <option value="Lunas">Lunas</option>
+                                <option value="Batal">Batal</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-900 text-slate-400 uppercase font-bold text-[11px] border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">ID</th>
+                                    <th class="p-3">Tgl Order</th>
+                                    <th class="p-3">Customer</th>
+                                    <th class="p-3">Paket</th>
+                                    <th class="p-3 text-center">Qty</th>
+                                    <th class="p-3 text-right">Total Order</th>
+                                    <th class="p-3 text-right">DP Masuk</th>
+                                    <th class="p-3 text-right">Piutang</th>
+                                    <th class="p-3 text-right">HPP</th>
+                                    <th class="p-3 text-right">Laba</th>
+                                    <th class="p-3 text-center">Margin</th>
+                                    <th class="p-3 text-center">Status</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fullOrderTable" class="divide-y divide-slate-800/60">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: MONITORING PIUTANG -->
+            <section id="view-piutang" class="view-section hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div>
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-hand-holding-dollar text-amber-400"></i> Monitoring Tagihan Piutang Customer
+                            </h3>
+                            <p class="text-xs text-slate-400">Daftar order yang masih memiliki sisa pembayaran (Piutang &gt; 0).</p>
+                        </div>
+                        <div class="bg-amber-500/10 border border-amber-500/20 px-4 py-2 rounded-xl text-right">
+                            <span class="text-xs text-amber-300 block">Total Piutang Outstanding</span>
+                            <span id="piutangTotalHeader" class="text-xl font-black text-amber-400">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-900 text-slate-400 uppercase font-bold text-[11px] border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">Order ID</th>
+                                    <th class="p-3">Customer / Tim</th>
+                                    <th class="p-3 text-right">Total Order</th>
+                                    <th class="p-3 text-right">DP Masuk</th>
+                                    <th class="p-3 text-right">Pelunasan Masuk</th>
+                                    <th class="p-3 text-right text-amber-400">Sisa Piutang</th>
+                                    <th class="p-3 text-center">Margin</th>
+                                    <th class="p-3 text-center">Status</th>
+                                    <th class="p-3 text-center">Target Selesai</th>
+                                    <th class="p-3 text-center">Aksi Bayar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="piutangTable" class="divide-y divide-slate-800/60">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: CASH FLOW -->
+            <section id="view-cashflow" class="view-section hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800">
+                    <div class="mb-6">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-money-bill-transfer text-emerald-400"></i> Rekap Arus Kas (Cash Flow Ledger)
+                        </h3>
+                        <p class="text-xs text-slate-400">Memisahkan penerimaan DP (bulan order) dan Pelunasan (bulan pembayaran) dikurangi HPP dan Fixed Cost.</p>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-900 text-slate-400 uppercase font-bold text-[11px] border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">Bulan</th>
+                                    <th class="p-3 text-right">DP Customer</th>
+                                    <th class="p-3 text-right">Pelunasan Masuk</th>
+                                    <th class="p-3 text-right text-emerald-400">Total Cash In</th>
+                                    <th class="p-3 text-right text-rose-400">HPP Produksi</th>
+                                    <th class="p-3 text-right text-rose-400">Fixed Cost</th>
+                                    <th class="p-3 text-right font-black">Net Cash Flow</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cashFlowTable" class="divide-y divide-slate-800/60">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: MASTER DATA MANAGEMENT -->
+            <section id="view-master" class="view-section hidden space-y-6">
+                <!-- Master Navigation Tabs -->
+                <div class="flex border-b border-slate-800 gap-4 text-xs font-bold">
+                    <button onclick="switchMasterTab('paket')" id="tab-master-paket" class="pb-3 border-b-2 border-blue-500 text-blue-400 transition-colors">Master Paket Jersey</button>
+                    <button onclick="switchMasterTab('addon')" id="tab-master-addon" class="pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition-colors">Master Add-On</button>
+                    <button onclick="switchMasterTab('fixedcost')" id="tab-master-fixedcost" class="pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition-colors">Fixed Cost Operasional</button>
+                </div>
+
+                <!-- Master Paket View -->
+                <div id="master-sub-paket" class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-sm font-bold text-white">Katalog Paket Apparel</h4>
+                        <button onclick="openPaketModal()" class="py-1.5 px-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Paket Baru
+                        </button>
+                    </div>
+                    <div class="glass-panel rounded-xl border border-slate-800 overflow-hidden">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-900 text-slate-400 uppercase font-bold border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">Nama Paket</th>
+                                    <th class="p-3 text-right">Harga Jual / pcs</th>
+                                    <th class="p-3 text-right">Modal Vendor / pcs</th>
+                                    <th class="p-3 text-right">Ongkir / pcs</th>
+                                    <th class="p-3 text-right">Margin / pcs</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="masterPaketTable" class="divide-y divide-slate-800/60">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Master Add-On View -->
+                <div id="master-sub-addon" class="hidden space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-sm font-bold text-white">Katalog Variation & Add-On</h4>
+                        <button onclick="openAddonModal()" class="py-1.5 px-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1">
+                            <i class="fa-solid fa-plus"></i> Add-On Baru
+                        </button>
+                    </div>
+                    <div class="glass-panel rounded-xl border border-slate-800 overflow-hidden">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-900 text-slate-400 uppercase font-bold border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">Nama Add-On</th>
+                                    <th class="p-3 text-right">Harga Jual / pcs</th>
+                                    <th class="p-3 text-right">Modal Vendor / pcs</th>
+                                    <th class="p-3">Catatan</th>
+                                    <th class="p-3 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="masterAddonTable" class="divide-y divide-slate-800/60">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Master Fixed Cost View -->
+                <div id="master-sub-fixedcost" class="hidden space-y-4">
+                    <div class="glass-panel p-6 rounded-2xl border border-slate-800 max-w-xl">
+                        <h4 class="text-sm font-bold text-white mb-4">Pengaturan Fixed Cost Bulanan</h4>
+                        <form id="fixedCostForm" onsubmit="saveFixedCost(event)" class="space-y-4 text-xs">
+                            <div>
+                                <label class="block text-slate-400 mb-1 font-semibold">Gaji Karyawan (Rp)</label>
+                                <input type="number" id="fcGajiKaryawan" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1 font-semibold">Gaji Desainer (Rp)</label>
+                                <input type="number" id="fcGajiDesainer" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1 font-semibold">Operasional Toko & Utility (Rp)</label>
+                                <input type="number" id="fcOperasional" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div class="pt-2 border-t border-slate-800 flex justify-between items-center">
+                                <div>
+                                    <span class="text-slate-400 block">Total Fixed Cost:</span>
+                                    <span id="fcTotalDisplay" class="text-base font-extrabold text-amber-400">Rp 0</span>
+                                </div>
+                                <button type="submit" class="py-2 px-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg shadow">
+                                    Simpan Fixed Cost
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MODAL 1: ORDER BUILDER / FORM MODAL -->
+    <div id="orderModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl">
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-900/90 rounded-t-2xl">
+                <h3 id="orderModalTitle" class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-cart-plus text-blue-400"></i> Buat Order Transaksi Baru
+                </h3>
+                <button onclick="closeOrderModal()" class="text-slate-400 hover:text-white p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form id="orderForm" onsubmit="saveOrder(event)" class="p-6 space-y-4 overflow-y-auto flex-1 text-xs">
+                <input type="hidden" id="editOrderId">
+
+                <!-- Row 1: Header Info -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-semibold">Order ID *</label>
+                        <input type="text" id="formOrderId" required placeholder="misal: A03" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white font-bold focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-semibold">Tanggal Order *</label>
+                        <input type="date" id="formTanggalOrder" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-semibold">Nama Customer / Tim *</label>
+                        <input type="text" id="formCustomer" required placeholder="Nama Sekolah/Klub" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <!-- Row 2: Paket Selection & Pricing -->
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-slate-950/60 border border-slate-800">
+                    <div class="sm:col-span-2">
+                        <label class="block text-slate-400 mb-1 font-semibold">Pilih Paket *</label>
+                        <select id="formPaket" onchange="calculateOrderForm()" required class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-semibold">Qty (pcs) *</label>
+                        <input type="number" id="formQty" min="1" value="1" oninput="calculateOrderForm()" required class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-white font-bold text-center focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-semibold">Diskon / pcs (Rp)</label>
+                        <input type="number" id="formDiskon" min="0" value="0" oninput="calculateOrderForm()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <!-- Add-On Multi Selector Section -->
+                <div class="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-slate-300">Detail Add-On Tambahan</span>
+                        <button type="button" onclick="addAddonRow()" class="py-1 px-3 bg-slate-800 hover:bg-slate-700 text-blue-400 font-semibold rounded-lg flex items-center gap-1 text-[11px]">
+                            <i class="fa-solid fa-plus"></i> Tambah Item Add-On
+                        </button>
+                    </div>
+                    
+                    <div id="addonRowsContainer" class="space-y-2">
+                        <!-- Dynamic Add-on rows inserted here -->
+                    </div>
+                </div>
+
+                <!-- Payment & Target Section -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-xl bg-slate-950/60 border border-slate-800">
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-semibold">% DP Pembayaran</label>
+                        <input type="number" id="formDpPercent" step="0.1" min="0" max="100" value="50" oninput="calculateOrderForm()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-white font-bold focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-semibold">DP Masuk (Nominal Rp)</label>
+                        <input type="number" id="formDpMasuk" oninput="calculateOrderFormCustomDP()" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-emerald-400 font-bold focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-semibold">Target Tanggal Selesai</label>
+                        <input type="date" id="formTargetSelesai" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <!-- Live Live Live Financial Calculations Summary Box -->
+                <div class="p-4 rounded-xl bg-blue-950/30 border border-blue-500/20 space-y-2">
+                    <div class="font-bold text-blue-300 border-b border-blue-500/20 pb-2 flex justify-between items-center">
+                        <span>Ringkasan Kalkulasi Otomatis (Live Real-Time)</span>
+                        <span id="formMarginBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-800 text-white">0% Margin</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[11px]">
+                        <div><span class="text-slate-400 block">Total Paket:</span><span id="calcTotalPaket" class="font-semibold text-white">Rp 0</span></div>
+                        <div><span class="text-slate-400 block">Total Add-On:</span><span id="calcTotalAddonJual" class="font-semibold text-white">Rp 0</span></div>
+                        <div><span class="text-slate-400 block">Total Diskon:</span><span id="calcTotalDiskon" class="font-semibold text-rose-400">Rp 0</span></div>
+                        <div><span class="text-slate-400 block">TOTAL ORDER:</span><span id="calcTotalOrder" class="font-bold text-emerald-400 text-sm">Rp 0</span></div>
+                        <div><span class="text-slate-400 block">Sisa Piutang:</span><span id="calcPiutang" class="font-semibold text-amber-400">Rp 0</span></div>
+                        <div><span class="text-slate-400 block">Total HPP Produksi:</span><span id="calcTotalHPP" class="font-semibold text-slate-300">Rp 0</span></div>
+                        <div><span class="text-slate-400 block">Laba Kotor:</span><span id="calcLabaKotor" class="font-semibold text-indigo-300">Rp 0</span></div>
+                        <div><span class="text-slate-400 block">Harga Netto / Pcs:</span><span id="calcHargaNettoPcs" class="font-semibold text-white">Rp 0</span></div>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-800 flex justify-end gap-3">
+                    <button type="button" onclick="closeOrderModal()" class="py-2 px-4 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold">Batal</button>
+                    <button type="submit" class="py-2 px-5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-lg shadow-blue-600/30">Simpan Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: PAYMENTS & STATUS MODAL -->
+    <div id="paymentModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-file-invoice-dollar text-emerald-400"></i> Input Pelunasan Order
+                </h3>
+                <button onclick="closePaymentModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form id="paymentForm" onsubmit="savePayment(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="payOrderId">
+                
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1">
+                    <div class="flex justify-between"><span class="text-slate-400">Order ID:</span><span id="payDisplayId" class="font-bold text-white"></span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Customer:</span><span id="payDisplayCustomer" class="font-medium text-slate-200"></span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Sisa Tagihan (Piutang):</span><span id="payDisplayPiutang" class="font-bold text-amber-400"></span></div>
+                </div>
+
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">Tanggal Pelunasan *</label>
+                    <input type="date" id="payTanggal" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">Nominal Pelunasan Masuk (Rp) *</label>
+                    <input type="number" id="payNominal" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-emerald-400 font-bold text-base focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">Update Status Order</label>
+                    <select id="payStatus" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none">
+                        <option value="Lunas">Lunas (Selesai Full)</option>
+                        <option value="Selesai">Selesai (Menunggu Kirim)</option>
+                        <option value="Produksi">Tetap Produksi (Cicilan)</option>
+                    </select>
+                </div>
+
+                <div class="pt-3 border-t border-slate-800 flex justify-end gap-3">
+                    <button type="button" onclick="closePaymentModal()" class="py-2 px-4 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold">Batal</button>
+                    <button type="submit" class="py-2 px-5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-600/30">Simpan Pelunasan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: MASTER PAKET MODAL -->
+    <div id="paketModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white">Master Paket Jersey</h3>
+                <button onclick="closePaketModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="paketForm" onsubmit="saveMasterPaket(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="editPaketIndex">
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">Nama Paket *</label>
+                    <input type="text" id="mPaketNama" required placeholder="Contoh: Elite Custom" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">Harga Jual / pcs (Rp) *</label>
+                    <input type="number" id="mPaketHarga" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">Modal Vendor / pcs (Rp) *</label>
+                    <input type="number" id="mPaketModal" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">Ongkir Vendor / pcs (Rp)</label>
+                    <input type="number" id="mPaketOngkir" value="2000" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white">
+                </div>
+                <div class="pt-3 border-t border-slate-800 flex justify-end gap-2">
+                    <button type="button" onclick="closePaketModal()" class="py-2 px-3 rounded-lg bg-slate-800 text-slate-300">Batal</button>
+                    <button type="submit" class="py-2 px-4 rounded-lg bg-blue-600 text-white font-bold">Simpan Paket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: MASTER ADDON MODAL -->
+    <div id="addonModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white">Master Add-On Item</h3>
+                <button onclick="closeAddonModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="addonForm" onsubmit="saveMasterAddon(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="editAddonIndex">
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">Nama Add-On *</label>
+                    <input type="text" id="mAddonNama" required placeholder="Contoh: Logo 3D TPU" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">Harga Jual / pcs (Rp) *</label>
+                    <input type="number" id="mAddonHarga" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">Modal Vendor / pcs (Rp) *</label>
+                    <input type="number" id="mAddonModal" required class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-semibold">Catatan</label>
+                    <input type="text" id="mAddonCatatan" placeholder="Keterangan opsional" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white">
+                </div>
+                <div class="pt-3 border-t border-slate-800 flex justify-end gap-2">
+                    <button type="button" onclick="closeAddonModal()" class="py-2 px-3 rounded-lg bg-slate-800 text-slate-300">Batal</button>
+                    <button type="submit" class="py-2 px-4 rounded-lg bg-blue-600 text-white font-bold">Simpan Add-On</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT APPLICATION CORE -->
+    <script>
+        // ==========================================
+        // INITIAL DEFAULT DATA (Excel DS Sport V3/V4)
+        // ==========================================
+        const DEFAULT_PAKET = [
+            { name: "Basic", harga: 135000, modal: 97500, ongkir: 2000 },
+            { name: "Pro", harga: 165000, modal: 122500, ongkir: 2000 },
+            { name: "Elite", harga: 195000, modal: 140000, ongkir: 2000 },
+            { name: "Jersey Atasan Basic", harga: 125000, modal: 75000, ongkir: 2000 },
+            { name: "Jersey Atasan Pro", harga: 145000, modal: 75000, ongkir: 2000 },
+            { name: "Jersey Atasan Elite", harga: 169000, modal: 75000, ongkir: 2000 }
+        ];
+
+        const DEFAULT_ADDONS = [
+            { name: "Logo 3D / TPU / RUBBER", harga: 25000, modal: 18000, catatan: "Isi modal vendor" },
+            { name: "Lengan Panjang", harga: 15000, modal: 10000, catatan: "Isi modal vendor" },
+            { name: "Upsize 2XL-4XL", harga: 10000, modal: 7000, catatan: "Isi modal vendor" },
+            { name: "Upsize 5XL-7XL", harga: 20000, modal: 15000, catatan: "Isi modal vendor" },
+            { name: "Kancing", harga: 7000, modal: 5000, catatan: "Isi modal vendor" },
+            { name: "Kerah Casual", harga: 10000, modal: 10000, catatan: "Isi modal vendor" },
+            { name: "Cutting Reglan + Pipping", harga: 15000, modal: 10000, catatan: "Isi modal vendor" },
+            { name: "Bahan Jacquard", harga: 18000, modal: 15000, catatan: "Isi modal vendor" },
+            { name: "Kerah Rib Rajut Casual", harga: 18000, modal: 15000, catatan: "Isi modal vendor" },
+            { name: "Kerah Tali Rib Rajut", harga: 25000, modal: 20000, catatan: "Isi modal vendor" },
+            { name: "Bahan Embosh", harga: 9000, modal: 5000, catatan: "Isi modal vendor" },
+            { name: "Pecah Pola Cepit", harga: 9000, modal: 5000, catatan: "" }
+        ];
+
+        const DEFAULT_FIXED_COST = {
+            gajiKaryawan: 2000000,
+            gajiDesainer: 2500000,
+            operasional: 1000000
+        };
+
+        const DEFAULT_ORDERS = [
+            {
+                id: "A01",
+                tanggalOrder: "2026-09-09",
+                customer: "SMK N1 PAMSIL",
+                paketName: "Pro",
+                qty: 42,
+                hargaNormal: 165000,
+                diskonPcs: 11190,
+                dpPercent: 44.5,
+                dpMasuk: 3000000,
+                pelunasanMasuk: 0,
+                tanggalPelunasan: "",
+                status: "Lunas",
+                targetSelesai: "2026-10-09",
+                tanggalSelesai: "2026-09-30",
+                bulanOrder: "2026-09",
+                bulanSelesai: "2026-09",
+                addons: [
+                    { name: "Lengan Panjang", qty: 19, harga: 15000, modal: 10000 }
+                ]
+            },
+            {
+                id: "A02",
+                tanggalOrder: "2026-09-10",
+                customer: "FUN TUESDAY",
+                paketName: "Pro",
+                qty: 58,
+                hargaNormal: 165000,
+                diskonPcs: 5000,
+                dpPercent: 53.3,
+                dpMasuk: 5000000,
+                pelunasanMasuk: 0,
+                tanggalPelunasan: "",
+                status: "Produksi",
+                targetSelesai: "2026-10-10",
+                tanggalSelesai: "",
+                bulanOrder: "2026-09",
+                bulanSelesai: "",
+                addons: [
+                    { name: "Upsize 2XL-4XL", qty: 4, harga: 10000, modal: 7000 },
+                    { name: "Lengan Panjang", qty: 4, harga: 15000, modal: 10000 }
+                ]
+            }
+        ];
+
+        // Global State Management
+        let appState = {
+            paketList: [],
+            addonList: [],
+            fixedCost: {},
+            orders: []
+        };
+
+        // ==========================================
+        // APP INITIALIZATION
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStateFromStorage();
+            setupNavigation();
+            populateMonthFilter();
+            renderAllViews();
+        });
+
+        function loadStateFromStorage() {
+            const storedPaket = localStorage.getItem('ds_paket');
+            const storedAddons = localStorage.getItem('ds_addons');
+            const storedFC = localStorage.getItem('ds_fixedcost');
+            const storedOrders = localStorage.getItem('ds_orders');
+
+            appState.paketList = storedPaket ? JSON.parse(storedPaket) : [...DEFAULT_PAKET];
+            appState.addonList = storedAddons ? JSON.parse(storedAddons) : [...DEFAULT_ADDONS];
+            appState.fixedCost = storedFC ? JSON.parse(storedFC) : { ...DEFAULT_FIXED_COST };
+            appState.orders = storedOrders ? JSON.parse(storedOrders) : [...DEFAULT_ORDERS];
+
+            saveStateToStorage();
+        }
+
+        function saveStateToStorage() {
+            localStorage.setItem('ds_paket', JSON.stringify(appState.paketList));
+            localStorage.setItem('ds_addons', JSON.stringify(appState.addonList));
+            localStorage.setItem('ds_fixedcost', JSON.stringify(appState.fixedCost));
+            localStorage.setItem('ds_orders', JSON.stringify(appState.orders));
+        }
+
+        function resetDataToDefault() {
+            if (confirm("Apakah Anda yakin ingin mengembalikan semua data ke default Excel V3/V4?")) {
+                localStorage.clear();
+                loadStateFromStorage();
+                populateMonthFilter();
+                renderAllViews();
+            }
+        }
+
+        // ==========================================
+        // FORMATTING & CALCULATIONS HELPER ENGINE
+        // ==========================================
+        function formatRp(val) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val || 0);
+        }
+
+        function calculateOrderMetrics(ord) {
+            const qty = Number(ord.qty) || 0;
+            const hargaNormal = Number(ord.hargaNormal) || 0;
+            const diskonPcs = Number(ord.diskonPcs) || 0;
+            
+            // Package base total
+            const totalPaket = hargaNormal * qty;
+            
+            // Addon totals
+            let totalAddonJual = 0;
+            let totalAddonModal = 0;
+            if (ord.addons && Array.isArray(ord.addons)) {
+                ord.addons.forEach(a => {
+                    totalAddonJual += (Number(a.harga) || 0) * (Number(a.qty) || 0);
+                    totalAddonModal += (Number(a.modal) || 0) * (Number(a.qty) || 0);
+                });
+            }
+
+            const totalDiskon = diskonPcs * qty;
+            const totalOrder = totalPaket + totalAddonJual - totalDiskon;
+            
+            // Price Netto per Pcs
+            const hargaNettoPcs = qty > 0 ? (totalOrder / qty) : 0;
+
+            // Payments & Piutang
+            const dpMasuk = Number(ord.dpMasuk) || 0;
+            const pelunasanMasuk = Number(ord.pelunasanMasuk) || 0;
+            const piutang = Math.max(0, totalOrder - dpMasuk - pelunasanMasuk);
+
+            // Vendor Costs (HPP)
+            const paketMaster = appState.paketList.find(p => p.name === ord.paketName) || { modal: 122500, ongkir: 2000 };
+            const modalPaketPcs = paketMaster.modal;
+            const ongkirPcs = paketMaster.ongkir;
+
+            const modalPaketTotal = modalPaketPcs * qty;
+            const totalOngkir = ongkirPcs * qty;
+            const totalHPP = modalPaketTotal + totalAddonModal + totalOngkir;
+
+            // Laba & Margin
+            const labaKotor = totalOrder - totalHPP;
+            const marginPercent = totalOrder > 0 ? (labaKotor / totalOrder) * 100 : 0;
+
+            return {
+                totalPaket,
+                totalAddonJual,
+                totalAddonModal,
+                totalDiskon,
+                totalOrder,
+                hargaNettoPcs,
+                dpMasuk,
+                pelunasanMasuk,
+                piutang,
+                modalPaketPcs,
+                ongkirPcs,
+                totalHPP,
+                labaKotor,
+                marginPercent
+            };
+        }
+
+        function getMarginBadge(marginPercent) {
+            if (marginPercent >= 25) {
+                return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">${marginPercent.toFixed(1)}%</span>`;
+            } else if (marginPercent >= 15) {
+                return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">${marginPercent.toFixed(1)}%</span>`;
+            } else {
+                return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">${marginPercent.toFixed(1)}%</span>`;
+            }
+        }
+
+        function getStatusBadge(status) {
+            const map = {
+                'DP Masuk': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+                'Produksi': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+                'QC': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+                'Selesai': 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+                'Lunas': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                'Batal': 'bg-rose-500/10 text-rose-400 border-rose-500/20'
+            };
+            const cls = map[status] || 'bg-slate-800 text-slate-300 border-slate-700';
+            return `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold border ${cls}">${status}</span>`;
+        }
+
+        // ==========================================
+        // NAVIGATION & ROUTING
+        // ==========================================
+        function setupNavigation() {
+            const links = document.querySelectorAll('.nav-link');
+            links.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href').replace('#', '');
+                    switchView(targetId);
+                    
+                    // Close mobile menu if open
+                    document.getElementById('sidebar').classList.add('-translate-x-full');
+                });
+            });
+
+            document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            });
+
+            document.getElementById('globalMonthFilter').addEventListener('change', () => {
+                renderAllViews();
+            });
+        }
+
+        function switchView(target) {
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
+            const activeSec = document.getElementById(`view-${target}`);
+            if (activeSec) activeSec.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const isActive = link.getAttribute('href') === `#${target}`;
+                link.classList.toggle('active', isActive);
+                link.classList.toggle('text-blue-400', isActive);
+                link.classList.toggle('bg-blue-500/10', isActive);
+                link.classList.toggle('border', isActive);
+                link.classList.toggle('border-blue-500/20', isActive);
+                link.classList.toggle('text-slate-400', !isActive);
+            });
+
+            const titleMap = {
+                'dashboard': 'Dashboard Analisis Apparels',
+                'orders': 'Manajemen Order & Transaksi',
+                'piutang': 'Monitoring Piutang Customer',
+                'cashflow': 'Rekap Arus Kas (Cash Flow)',
+                'master': 'Pengaturan Master Data & Costs'
+            };
+            document.getElementById('pageTitle').innerText = titleMap[target] || 'Dashboard';
+        }
+
+        function populateMonthFilter() {
+            const select = document.getElementById('globalMonthFilter');
+            const months = new Set(['ALL', '2026-09', '2026-10']);
+            
+            appState.orders.forEach(o => {
+                if (o.bulanOrder) months.add(o.bulanOrder);
+            });
+
+            select.innerHTML = '';
+            Array.from(months).sort().reverse().forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m;
+                opt.innerText = m === 'ALL' ? 'Semua Bulan' : m;
+                select.appendChild(opt);
+            });
+
+            select.value = '2026-09'; // Default excel view
+        }
+
+        function renderAllViews() {
+            renderDashboard();
+            renderOrdersTable();
+            renderPiutangTable();
+            renderCashFlow();
+            renderMasterTables();
+        }
+
+        // ==========================================
+        // VIEW 1: DASHBOARD
+        // ==========================================
+        function renderDashboard() {
+            const selectedMonth = document.getElementById('globalMonthFilter').value;
+            
+            const filteredOrders = appState.orders.filter(o => {
+                if (selectedMonth === 'ALL') return true;
+                return o.bulanOrder === selectedMonth;
+            });
+
+            let totalOmzet = 0;
+            let totalNilaiPaket = 0;
+            let totalPcs = 0;
+            let totalDP = 0;
+            let totalPelunasan = 0;
+            let totalHPP = 0;
+            let totalLaba = 0;
+            let totalPiutang = 0;
+
+            const pipelineCounts = {
+                'DP Masuk': 0, 'Produksi': 0, 'QC': 0, 'Selesai': 0, 'Belum Lunas': 0, 'Lunas': 0, 'Batal': 0
+            };
+
+            filteredOrders.forEach(o => {
+                const metrics = calculateOrderMetrics(o);
+                totalOmzet += metrics.totalOrder;
+                totalNilaiPaket += metrics.totalPaket;
+                totalPcs += Number(o.qty) || 0;
+                totalDP += metrics.dpMasuk;
+                totalPelunasan += metrics.pelunasanMasuk;
+                totalHPP += metrics.totalHPP;
+                totalLaba += metrics.labaKotor;
+                totalPiutang += metrics.piutang;
+
+                // Pipeline count
+                if (pipelineCounts[o.status] !== undefined) pipelineCounts[o.status]++;
+                if (metrics.piutang > 0) pipelineCounts['Belum Lunas']++;
+            });
+
+            const marginAvg = totalOmzet > 0 ? (totalLaba / totalOmzet) * 100 : 0;
+            const totalCashIn = totalDP + totalPelunasan;
+
+            // DOM Updates for KPIs
+            document.getElementById('kpiOmzet').innerText = formatRp(totalOmzet);
+            document.getElementById('kpiTotalPcs').innerText = totalPcs;
+            document.getElementById('kpiNilaiPaket').innerText = formatRp(totalNilaiPaket);
+
+            document.getElementById('kpiCashIn').innerText = formatRp(totalCashIn);
+            document.getElementById('kpiDP').innerText = formatRp(totalDP);
+            document.getElementById('kpiPelunasan').innerText = formatRp(totalPelunasan);
+
+            document.getElementById('kpiLabaKotor').innerText = formatRp(totalLaba);
+            document.getElementById('kpiHPP').innerText = formatRp(totalHPP);
+            document.getElementById('kpiMarginAvg').innerText = `${marginAvg.toFixed(1)}%`;
+
+            document.getElementById('kpiPiutang').innerText = formatRp(totalPiutang);
+            document.getElementById('kpiBelumLunasCount').innerText = `${pipelineCounts['Belum Lunas']} Order Belum Lunas`;
+
+            // Pipeline Grid
+            const pipelineContainer = document.getElementById('pipelineGrid');
+            pipelineContainer.innerHTML = `
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-center">
+                    <span class="text-[11px] text-slate-400 block font-semibold">DP Masuk</span>
+                    <span class="text-xl font-black text-blue-400">${pipelineCounts['DP Masuk']}</span>
+                </div>
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-center">
+                    <span class="text-[11px] text-slate-400 block font-semibold">Produksi</span>
+                    <span class="text-xl font-black text-purple-400">${pipelineCounts['Produksi']}</span>
+                </div>
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-center">
+                    <span class="text-[11px] text-slate-400 block font-semibold">QC</span>
+                    <span class="text-xl font-black text-amber-400">${pipelineCounts['QC']}</span>
+                </div>
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-center">
+                    <span class="text-[11px] text-slate-400 block font-semibold">Selesai</span>
+                    <span class="text-xl font-black text-indigo-400">${pipelineCounts['Selesai']}</span>
+                </div>
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-center">
+                    <span class="text-[11px] text-slate-400 block font-semibold">Belum Lunas</span>
+                    <span class="text-xl font-black text-amber-400">${pipelineCounts['Belum Lunas']}</span>
+                </div>
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-center">
+                    <span class="text-[11px] text-slate-400 block font-semibold">Lunas</span>
+                    <span class="text-xl font-black text-emerald-400">${pipelineCounts['Lunas']}</span>
+                </div>
+                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-center col-span-2">
+                    <span class="text-[11px] text-slate-400 block font-semibold">Batal</span>
+                    <span class="text-xl font-black text-rose-400">${pipelineCounts['Batal']}</span>
+                </div>
+            `;
+
+            // Margin Health Indicator
+            const healthCard = document.getElementById('marginHealthCard');
+            const healthIcon = document.getElementById('marginHealthIcon');
+            const healthStatus = document.getElementById('marginHealthStatus');
+            const healthDesc = document.getElementById('marginHealthDesc');
+
+            if (marginAvg >= 25) {
+                healthCard.className = "p-4 rounded-xl border flex items-center gap-4 bg-emerald-950/40 border-emerald-500/30";
+                healthIcon.className = "w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-emerald-500/20 text-emerald-400";
+                healthStatus.innerText = "SEHAT (≥25%)";
+                healthStatus.className = "font-extrabold text-lg text-emerald-400";
+                healthDesc.innerText = "Profit margin aman & sangat menguntungkan";
+            } else if (marginAvg >= 15) {
+                healthCard.className = "p-4 rounded-xl border flex items-center gap-4 bg-amber-950/40 border-amber-500/30";
+                healthIcon.className = "w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-amber-500/20 text-amber-400";
+                healthStatus.innerText = "PERHATIKAN (15–24.9%)";
+                healthStatus.className = "font-extrabold text-lg text-amber-400";
+                healthDesc.innerText = "Margin sedang, kontrol biaya operasional";
+            } else {
+                healthCard.className = "p-4 rounded-xl border flex items-center gap-4 bg-rose-950/40 border-rose-500/30";
+                healthIcon.className = "w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-rose-500/20 text-rose-400";
+                healthStatus.innerText = "MARGIN RENDAH (<15%)";
+                healthStatus.className = "font-extrabold text-lg text-rose-400";
+                healthDesc.innerText = "Peringatan: Evaluasi harga jual atau modal vendor!";
+            }
+
+            // Dashboard Table Preview
+            const dashTable = document.getElementById('dashboardOrderTable');
+            dashTable.innerHTML = '';
+            filteredOrders.slice(0, 5).forEach(o => {
+                const m = calculateOrderMetrics(o);
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-blue-400">${o.id}</td>
+                    <td class="p-3 text-slate-400">${o.tanggalOrder}</td>
+                    <td class="p-3 font-semibold text-white">${o.customer}</td>
+                    <td class="p-3 text-slate-300">${o.paketName}</td>
+                    <td class="p-3 text-center font-bold">${o.qty}</td>
+                    <td class="p-3 text-right font-bold text-white">${formatRp(m.totalOrder)}</td>
+                    <td class="p-3 text-right font-semibold ${m.piutang > 0 ? 'text-amber-400' : 'text-slate-500'}">${formatRp(m.piutang)}</td>
+                    <td class="p-3 text-center">${getMarginBadge(m.marginPercent)}</td>
+                    <td class="p-3 text-center">${getStatusBadge(o.status)}</td>
+                `;
+                dashTable.appendChild(tr);
+            });
+        }
+
+        // ==========================================
+        // VIEW 2: ORDERS MANAGEMENT
+        // ==========================================
+        function renderOrdersTable() {
+            const tableBody = document.getElementById('fullOrderTable');
+            tableBody.innerHTML = '';
+
+            appState.orders.forEach(o => {
+                const m = calculateOrderMetrics(o);
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 transition-colors order-row";
+                tr.setAttribute('data-id', o.id.toLowerCase());
+                tr.setAttribute('data-customer', o.customer.toLowerCase());
+                tr.setAttribute('data-status', o.status);
+
+                tr.innerHTML = `
+                    <td class="p-3 font-extrabold text-blue-400">${o.id}</td>
+                    <td class="p-3 text-slate-400">${o.tanggalOrder}</td>
+                    <td class="p-3 font-bold text-white">${o.customer}</td>
+                    <td class="p-3 text-slate-300">${o.paketName}</td>
+                    <td class="p-3 text-center font-bold">${o.qty}</td>
+                    <td class="p-3 text-right font-black text-white">${formatRp(m.totalOrder)}</td>
+                    <td class="p-3 text-right text-emerald-400 font-medium">${formatRp(m.dpMasuk)}</td>
+                    <td class="p-3 text-right font-bold ${m.piutang > 0 ? 'text-amber-400' : 'text-slate-500'}">${formatRp(m.piutang)}</td>
+                    <td class="p-3 text-right text-slate-400">${formatRp(m.totalHPP)}</td>
+                    <td class="p-3 text-right text-indigo-300 font-semibold">${formatRp(m.labaKotor)}</td>
+                    <td class="p-3 text-center">${getMarginBadge(m.marginPercent)}</td>
+                    <td class="p-3 text-center">${getStatusBadge(o.status)}</td>
+                    <td class="p-3 text-center">
+                        <div class="flex items-center justify-center gap-1">
+                            <button onclick="editOrder('${o.id}')" title="Edit Order" class="p-1.5 rounded-lg bg-slate-800 hover:bg-blue-600 text-slate-300 hover:text-white transition-colors">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="openPaymentModalForId('${o.id}')" title="Input Pelunasan" class="p-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 text-slate-300 hover:text-white transition-colors">
+                                <i class="fa-solid fa-hand-holding-dollar"></i>
+                            </button>
+                            <button onclick="deleteOrder('${o.id}')" title="Hapus" class="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white transition-colors">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            filterOrderTable();
+        }
+
+        function filterOrderTable() {
+            const search = document.getElementById('orderSearchInput').value.toLowerCase();
+            const status = document.getElementById('orderStatusFilter').value;
+
+            document.querySelectorAll('.order-row').forEach(row => {
+                const id = row.getAttribute('data-id');
+                const customer = row.getAttribute('data-customer');
+                const rowStatus = row.getAttribute('data-status');
+
+                const matchesSearch = id.includes(search) || customer.includes(search);
+                const matchesStatus = status === 'ALL' || rowStatus === status;
+
+                row.style.display = matchesSearch && matchesStatus ? '' : 'none';
+            });
+        }
+
+        // ==========================================
+        // DYNAMIC ORDER BUILDER & MODAL LOGIC
+        // ==========================================
+        function populatePaketDropdown() {
+            const select = document.getElementById('formPaket');
+            select.innerHTML = '';
+            appState.paketList.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.name;
+                opt.innerText = `${p.name} - ${formatRp(p.harga)}/pcs`;
+                select.appendChild(opt);
+            });
+        }
+
+        function openOrderModal(editId = null) {
+            populatePaketDropdown();
+            document.getElementById('addonRowsContainer').innerHTML = '';
+
+            if (editId) {
+                const ord = appState.orders.find(o => o.id === editId);
+                if (!ord) return;
+                document.getElementById('orderModalTitle').innerText = `Edit Order: ${ord.id}`;
+                document.getElementById('editOrderId').value = ord.id;
+                document.getElementById('formOrderId').value = ord.id;
+                document.getElementById('formOrderId').readOnly = true;
+                document.getElementById('formTanggalOrder').value = ord.tanggalOrder;
+                document.getElementById('formCustomer').value = ord.customer;
+                document.getElementById('formPaket').value = ord.paketName;
+                document.getElementById('formQty').value = ord.qty;
+                document.getElementById('formDiskon').value = ord.diskonPcs;
+                document.getElementById('formDpPercent').value = ord.dpPercent || 50;
+                document.getElementById('formDpMasuk').value = ord.dpMasuk;
+                document.getElementById('formTargetSelesai').value = ord.targetSelesai || '';
+
+                if (ord.addons) {
+                    ord.addons.forEach(a => addAddonRow(a.name, a.qty));
+                }
+            } else {
+                document.getElementById('orderModalTitle').innerText = 'Buat Order Transaksi Baru';
+                document.getElementById('editOrderId').value = '';
+                document.getElementById('formOrderId').value = `A0${appState.orders.length + 1}`;
+                document.getElementById('formOrderId').readOnly = false;
+                document.getElementById('formTanggalOrder').value = new Date().toISOString().split('T')[0];
+                document.getElementById('formCustomer').value = '';
+                document.getElementById('formQty').value = 40;
+                document.getElementById('formDiskon').value = 0;
+                document.getElementById('formDpPercent').value = 50;
+                document.getElementById('formTargetSelesai').value = '';
+            }
+
+            document.getElementById('orderModal').classList.remove('hidden');
+            calculateOrderForm();
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.add('hidden');
+        }
+
+        function addAddonRow(selectedName = '', qtyVal = 1) {
+            const container = document.getElementById('addonRowsContainer');
+            const rowId = `addon-row-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
+
+            let addonOptionsHTML = '<option value="">-- Pilih Add-On --</option>';
+            appState.addonList.forEach(a => {
+                const isSelected = a.name === selectedName ? 'selected' : '';
+                addonOptionsHTML += `<option value="${a.name}" ${isSelected}>${a.name} (+${formatRp(a.harga)})</option>`;
+            });
+
+            const row = document.createElement('div');
+            row.className = "flex items-center gap-2 addon-row";
+            row.id = rowId;
+            row.innerHTML = `
+                <select onchange="calculateOrderForm()" class="addon-select flex-1 bg-slate-900 border border-slate-800 rounded-lg p-2 text-white text-xs focus:outline-none">
+                    ${addonOptionsHTML}
+                </select>
+                <input type="number" value="${qtyVal}" min="1" oninput="calculateOrderForm()" placeholder="Qty" class="addon-qty w-20 bg-slate-900 border border-slate-800 rounded-lg p-2 text-white text-xs font-bold text-center focus:outline-none">
+                <button type="button" onclick="removeAddonRow('${rowId}')" class="p-2 text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(row);
+            calculateOrderForm();
+        }
+
+        function removeAddonRow(rowId) {
+            const el = document.getElementById(rowId);
+            if (el) el.remove();
+            calculateOrderForm();
+        }
+
+        function calculateOrderForm() {
+            const paketName = document.getElementById('formPaket').value;
+            const paket = appState.paketList.find(p => p.name === paketName) || { harga: 165000, modal: 122500, ongkir: 2000 };
+
+            const qty = Number(document.getElementById('formQty').value) || 0;
+            const diskonPcs = Number(document.getElementById('formDiskon').value) || 0;
+
+            // Compute addons
+            let totalAddonJual = 0;
+            let totalAddonModal = 0;
+
+            document.querySelectorAll('.addon-row').forEach(row => {
+                const name = row.querySelector('.addon-select').value;
+                const addonQty = Number(row.querySelector('.addon-qty').value) || 0;
+                const addonMaster = appState.addonList.find(a => a.name === name);
+
+                if (addonMaster) {
+                    totalAddonJual += addonMaster.harga * addonQty;
+                    totalAddonModal += addonMaster.modal * addonQty;
+                }
+            });
+
+            const totalPaket = paket.harga * qty;
+            const totalDiskon = diskonPcs * qty;
+            const totalOrder = totalPaket + totalAddonJual - totalDiskon;
+
+            const dpPercent = Number(document.getElementById('formDpPercent').value) || 0;
+            const dpMasuk = Math.round((dpPercent / 100) * totalOrder);
+            document.getElementById('formDpMasuk').value = dpMasuk;
+
+            const piutang = Math.max(0, totalOrder - dpMasuk);
+
+            const totalHPP = (paket.modal * qty) + totalAddonModal + (paket.ongkir * qty);
+            const labaKotor = totalOrder - totalHPP;
+            const marginPercent = totalOrder > 0 ? (labaKotor / totalOrder) * 100 : 0;
+            const hargaNettoPcs = qty > 0 ? (totalOrder / qty) : 0;
+
+            // DOM Render Summary Box
+            document.getElementById('calcTotalPaket').innerText = formatRp(totalPaket);
+            document.getElementById('calcTotalAddonJual').innerText = formatRp(totalAddonJual);
+            document.getElementById('calcTotalDiskon').innerText = formatRp(totalDiskon);
+            document.getElementById('calcTotalOrder').innerText = formatRp(totalOrder);
+            document.getElementById('calcPiutang').innerText = formatRp(piutang);
+            document.getElementById('calcTotalHPP').innerText = formatRp(totalHPP);
+            document.getElementById('calcLabaKotor').innerText = formatRp(labaKotor);
+            document.getElementById('calcHargaNettoPcs').innerText = formatRp(hargaNettoPcs);
+
+            const badge = document.getElementById('formMarginBadge');
+            badge.innerText = `${marginPercent.toFixed(1)}% Margin`;
+            if (marginPercent >= 25) badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+            else if (marginPercent >= 15) badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30";
+            else badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30";
+        }
+
+        function calculateOrderFormCustomDP() {
+            const totalOrderText = document.getElementById('calcTotalOrder').innerText;
+            // Recalculate Piutang based on manual DP change
+            const dpMasuk = Number(document.getElementById('formDpMasuk').value) || 0;
+            
+            const paketName = document.getElementById('formPaket').value;
+            const paket = appState.paketList.find(p => p.name === paketName) || { harga: 165000 };
+            const qty = Number(document.getElementById('formQty').value) || 0;
+            const diskonPcs = Number(document.getElementById('formDiskon').value) || 0;
+
+            let totalAddonJual = 0;
+            document.querySelectorAll('.addon-row').forEach(row => {
+                const name = row.querySelector('.addon-select').value;
+                const addonQty = Number(row.querySelector('.addon-qty').value) || 0;
+                const addonMaster = appState.addonList.find(a => a.name === name);
+                if (addonMaster) totalAddonJual += addonMaster.harga * addonQty;
+            });
+
+            const totalOrder = (paket.harga * qty) + totalAddonJual - (diskonPcs * qty);
+            const piutang = Math.max(0, totalOrder - dpMasuk);
+            document.getElementById('calcPiutang').innerText = formatRp(piutang);
+
+            if (totalOrder > 0) {
+                document.getElementById('formDpPercent').value = ((dpMasuk / totalOrder) * 100).toFixed(1);
+            }
+        }
+
+        function saveOrder(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editOrderId').value;
+            const orderId = document.getElementById('formOrderId').value.trim();
+            const tgl = document.getElementById('formTanggalOrder').value;
+            const customer = document.getElementById('formCustomer').value.trim();
+            const paketName = document.getElementById('formPaket').value;
+            const qty = Number(document.getElementById('formQty').value) || 0;
+            const diskonPcs = Number(document.getElementById('formDiskon').value) || 0;
+            const dpPercent = Number(document.getElementById('formDpPercent').value) || 0;
+            const dpMasuk = Number(document.getElementById('formDpMasuk').value) || 0;
+            const targetSelesai = document.getElementById('formTargetSelesai').value;
+
+            // Collect selected Addons
+            const addons = [];
+            document.querySelectorAll('.addon-row').forEach(row => {
+                const name = row.querySelector('.addon-select').value;
+                const addonQty = Number(row.querySelector('.addon-qty').value) || 0;
+                const master = appState.addonList.find(a => a.name === name);
+                if (master) {
+                    addons.push({
+                        name: master.name,
+                        qty: addonQty,
+                        harga: master.harga,
+                        modal: master.modal
+                    });
+                }
+            });
+
+            const paketMaster = appState.paketList.find(p => p.name === paketName) || { harga: 165000 };
+            const bulanOrder = tgl.substring(0, 7);
+
+            const orderData = {
+                id: orderId,
+                tanggalOrder: tgl,
+                customer,
+                paketName,
+                qty,
+                hargaNormal: paketMaster.harga,
+                diskonPcs,
+                dpPercent,
+                dpMasuk,
+                pelunasanMasuk: 0,
+                tanggalPelunasan: "",
+                status: dpMasuk > 0 ? "DP Masuk" : "Produksi",
+                targetSelesai,
+                tanggalSelesai: "",
+                bulanOrder,
+                bulanSelesai: "",
+                addons
+            };
+
+            if (editId) {
+                const idx = appState.orders.findIndex(o => o.id === editId);
+                if (idx !== -1) {
+                    // Preserve existing pelunasan data if editing
+                    orderData.pelunasanMasuk = appState.orders[idx].pelunasanMasuk;
+                    orderData.tanggalPelunasan = appState.orders[idx].tanggalPelunasan;
+                    orderData.status = appState.orders[idx].status;
+                    appState.orders[idx] = orderData;
+                }
+            } else {
+                appState.orders.unshift(orderData);
+            }
+
+            saveStateToStorage();
+            closeOrderModal();
+            populateMonthFilter();
+            renderAllViews();
+        }
+
+        function editOrder(id) {
+            openOrderModal(id);
+        }
+
+        function deleteOrder(id) {
+            if (confirm(`Hapus order ${id}? Data tidak dapat dikembalikan.`)) {
+                appState.orders = appState.orders.filter(o => o.id !== id);
+                saveStateToStorage();
+                populateMonthFilter();
+                renderAllViews();
+            }
+        }
+
+        // ==========================================
+        // VIEW 3: MONITORING PIUTANG & PAYMENTS
+        // ==========================================
+        function renderPiutangTable() {
+            const tableBody = document.getElementById('piutangTable');
+            tableBody.innerHTML = '';
+
+            let totalPiutangOutstanding = 0;
+
+            appState.orders.forEach(o => {
+                const m = calculateOrderMetrics(o);
+                if (m.piutang > 0) {
+                    totalPiutangOutstanding += m.piutang;
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-800/40 transition-colors";
+                    tr.innerHTML = `
+                        <td class="p-3 font-extrabold text-blue-400">${o.id}</td>
+                        <td class="p-3 font-bold text-white">${o.customer}</td>
+                        <td class="p-3 text-right font-medium">${formatRp(m.totalOrder)}</td>
+                        <td class="p-3 text-right text-slate-300">${formatRp(m.dpMasuk)}</td>
+                        <td class="p-3 text-right text-emerald-400">${formatRp(m.pelunasanMasuk)}</td>
+                        <td class="p-3 text-right font-black text-amber-400">${formatRp(m.piutang)}</td>
+                        <td class="p-3 text-center">${getMarginBadge(m.marginPercent)}</td>
+                        <td class="p-3 text-center">${getStatusBadge(o.status)}</td>
+                        <td class="p-3 text-center text-slate-400">${o.targetSelesai || '-'}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="openPaymentModalForId('${o.id}')" class="py-1 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-[11px] shadow">
+                                Bayar
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(tr);
+                }
+            });
+
+            document.getElementById('piutangTotalHeader').innerText = formatRp(totalPiutangOutstanding);
+        }
+
+        function openPaymentModalForId(id) {
+            const ord = appState.orders.find(o => o.id === id);
+            if (!ord) return;
+
+            const m = calculateOrderMetrics(ord);
+
+            document.getElementById('payOrderId').value = ord.id;
+            document.getElementById('payDisplayId').innerText = ord.id;
+            document.getElementById('payDisplayCustomer').innerText = ord.customer;
+            document.getElementById('payDisplayPiutang').innerText = formatRp(m.piutang);
+            document.getElementById('payNominal').value = m.piutang;
+            document.getElementById('payTanggal').value = new Date().toISOString().split('T')[0];
+            document.getElementById('payStatus').value = "Lunas";
+
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+        }
+
+        function savePayment(e) {
+            e.preventDefault();
+            const id = document.getElementById('payOrderId').value;
+            const payNominal = Number(document.getElementById('payNominal').value) || 0;
+            const payTanggal = document.getElementById('payTanggal').value;
+            const newStatus = document.getElementById('payStatus').value;
+
+            const idx = appState.orders.findIndex(o => o.id === id);
+            if (idx !== -1) {
+                appState.orders[idx].pelunasanMasuk = (Number(appState.orders[idx].pelunasanMasuk) || 0) + payNominal;
+                appState.orders[idx].tanggalPelunasan = payTanggal;
+                appState.orders[idx].status = newStatus;
+                
+                if (payTanggal) {
+                    appState.orders[idx].bulanSelesai = payTanggal.substring(0, 7);
+                }
+            }
+
+            saveStateToStorage();
+            closePaymentModal();
+            renderAllViews();
+        }
+
+        // ==========================================
+        // VIEW 4: CASH FLOW LEDGER
+        // ==========================================
+        function renderCashFlow() {
+            const tableBody = document.getElementById('cashFlowTable');
+            tableBody.innerHTML = '';
+
+            // Generate monthly breakdown for 2026
+            const monthlyData = {};
+            for (let i = 1; i <= 12; i++) {
+                const monthStr = `2026-${i.toString().padStart(2, '0')}`;
+                monthlyData[monthStr] = {
+                    dpCustomer: 0,
+                    pelunasan: 0,
+                    hppProduksi: 0
+                };
+            }
+
+            // Aggregate DP and HPP on Order Month
+            appState.orders.forEach(o => {
+                const m = calculateOrderMetrics(o);
+                if (o.bulanOrder && monthlyData[o.bulanOrder]) {
+                    monthlyData[o.bulanOrder].dpCustomer += m.dpMasuk;
+                    monthlyData[o.bulanOrder].hppProduksi += m.totalHPP;
+                }
+
+                // Aggregate Pelunasan on Payment Month
+                if (o.tanggalPelunasan) {
+                    const payMonth = o.tanggalPelunasan.substring(0, 7);
+                    if (monthlyData[payMonth]) {
+                        monthlyData[payMonth].pelunasan += m.pelunasanMasuk;
+                    }
+                }
+            });
+
+            const fixedCostTotal = (appState.fixedCost.gajiKaryawan || 0) + (appState.fixedCost.gajiDesainer || 0) + (appState.fixedCost.operasional || 0);
+
+            Object.keys(monthlyData).sort().forEach(month => {
+                const data = monthlyData[month];
+                const totalCashIn = data.dpCustomer + data.pelunasan;
+                const netCashFlow = totalCashIn - data.hppProduksi - fixedCostTotal;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-white">${month}</td>
+                    <td class="p-3 text-right text-slate-300">${formatRp(data.dpCustomer)}</td>
+                    <td class="p-3 text-right text-slate-300">${formatRp(data.pelunasan)}</td>
+                    <td class="p-3 text-right font-bold text-emerald-400">${formatRp(totalCashIn)}</td>
+                    <td class="p-3 text-right text-rose-400">${formatRp(data.hppProduksi)}</td>
+                    <td class="p-3 text-right text-rose-400">${formatRp(fixedCostTotal)}</td>
+                    <td class="p-3 text-right font-black ${netCashFlow >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${formatRp(netCashFlow)}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // ==========================================
+        // VIEW 5: MASTER DATA MANAGEMENT
+        // ==========================================
+        function switchMasterTab(tab) {
+            ['paket', 'addon', 'fixedcost'].forEach(t => {
+                document.getElementById(`master-sub-${t}`).classList.add('hidden');
+                document.getElementById(`tab-master-${t}`).className = "pb-3 border-b-2 border-transparent text-slate-400 hover:text-white transition-colors";
+            });
+
+            document.getElementById(`master-sub-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-master-${tab}`).className = "pb-3 border-b-2 border-blue-500 text-blue-400 transition-colors font-bold";
+        }
+
+        function renderMasterTables() {
+            // Master Paket
+            const paketBody = document.getElementById('masterPaketTable');
+            paketBody.innerHTML = '';
+            appState.paketList.forEach((p, idx) => {
+                const marginPcs = p.harga - p.modal - p.ongkir;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-white">${p.name}</td>
+                    <td class="p-3 text-right text-emerald-400 font-semibold">${formatRp(p.harga)}</td>
+                    <td class="p-3 text-right text-slate-300">${formatRp(p.modal)}</td>
+                    <td class="p-3 text-right text-slate-400">${formatRp(p.ongkir)}</td>
+                    <td class="p-3 text-right font-bold text-indigo-300">${formatRp(marginPcs)}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="editMasterPaket(${idx})" class="p-1 text-blue-400 hover:text-blue-300"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteMasterPaket(${idx})" class="p-1 text-rose-400 hover:text-rose-300 ml-2"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                paketBody.appendChild(tr);
+            });
+
+            // Master Addon
+            const addonBody = document.getElementById('masterAddonTable');
+            addonBody.innerHTML = '';
+            appState.addonList.forEach((a, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-white">${a.name}</td>
+                    <td class="p-3 text-right text-emerald-400 font-semibold">${formatRp(a.harga)}</td>
+                    <td class="p-3 text-right text-slate-300">${formatRp(a.modal)}</td>
+                    <td class="p-3 text-slate-400">${a.catatan || '-'}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="editMasterAddon(${idx})" class="p-1 text-blue-400 hover:text-blue-300"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteMasterAddon(${idx})" class="p-1 text-rose-400 hover:text-rose-300 ml-2"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                addonBody.appendChild(tr);
+            });
+
+            // Fixed Cost Form
+            document.getElementById('fcGajiKaryawan').value = appState.fixedCost.gajiKaryawan || 0;
+            document.getElementById('fcGajiDesainer').value = appState.fixedCost.gajiDesainer || 0;
+            document.getElementById('fcOperasional').value = appState.fixedCost.operasional || 0;
+            
+            const fcTotal = (appState.fixedCost.gajiKaryawan || 0) + (appState.fixedCost.gajiDesainer || 0) + (appState.fixedCost.operasional || 0);
+            document.getElementById('fcTotalDisplay').innerText = formatRp(fcTotal);
+        }
+
+        function openPaketModal(idx = null) {
+            if (idx !== null) {
+                const p = appState.paketList[idx];
+                document.getElementById('editPaketIndex').value = idx;
+                document.getElementById('mPaketNama').value = p.name;
+                document.getElementById('mPaketHarga').value = p.harga;
+                document.getElementById('mPaketModal').value = p.modal;
+                document.getElementById('mPaketOngkir').value = p.ongkir;
+            } else {
+                document.getElementById('editPaketIndex').value = '';
+                document.getElementById('mPaketNama').value = '';
+                document.getElementById('mPaketHarga').value = '';
+                document.getElementById('mPaketModal').value = '';
+                document.getElementById('mPaketOngkir').value = 2000;
+            }
+            document.getElementById('paketModal').classList.remove('hidden');
+        }
+
+        function closePaketModal() { document.getElementById('paketModal').classList.add('hidden'); }
+
+        function saveMasterPaket(e) {
+            e.preventDefault();
+            const idx = document.getElementById('editPaketIndex').value;
+            const data = {
+                name: document.getElementById('mPaketNama').value,
+                harga: Number(document.getElementById('mPaketHarga').value) || 0,
+                modal: Number(document.getElementById('mPaketModal').value) || 0,
+                ongkir: Number(document.getElementById('mPaketOngkir').value) || 0
+            };
+
+            if (idx !== '') appState.paketList[idx] = data;
+            else appState.paketList.push(data);
+
+            saveStateToStorage();
+            closePaketModal();
+            renderMasterTables();
+        }
+
+        function editMasterPaket(idx) { openPaketModal(idx); }
+        function deleteMasterPaket(idx) {
+            if (confirm("Hapus paket master ini?")) {
+                appState.paketList.splice(idx, 1);
+                saveStateToStorage();
+                renderMasterTables();
+            }
+        }
+
+        function openAddonModal(idx = null) {
+            if (idx !== null) {
+                const a = appState.addonList[idx];
+                document.getElementById('editAddonIndex').value = idx;
+                document.getElementById('mAddonNama').value = a.name;
+                document.getElementById('mAddonHarga').value = a.harga;
+                document.getElementById('mAddonModal').value = a.modal;
+                document.getElementById('mAddonCatatan').value = a.catatan || '';
+            } else {
+                document.getElementById('editAddonIndex').value = '';
+                document.getElementById('mAddonNama').value = '';
+                document.getElementById('mAddonHarga').value = '';
+                document.getElementById('mAddonModal').value = '';
+                document.getElementById('mAddonCatatan').value = '';
+            }
+            document.getElementById('addonModal').classList.remove('hidden');
+        }
+
+        function closeAddonModal() { document.getElementById('addonModal').classList.add('hidden'); }
+
+        function saveMasterAddon(e) {
+            e.preventDefault();
+            const idx = document.getElementById('editAddonIndex').value;
+            const data = {
+                name: document.getElementById('mAddonNama').value,
+                harga: Number(document.getElementById('mAddonHarga').value) || 0,
+                modal: Number(document.getElementById('mAddonModal').value) || 0,
+                catatan: document.getElementById('mAddonCatatan').value
+            };
+
+            if (idx !== '') appState.addonList[idx] = data;
+            else appState.addonList.push(data);
+
+            saveStateToStorage();
+            closeAddonModal();
+            renderMasterTables();
+        }
+
+        function editMasterAddon(idx) { openAddonModal(idx); }
+        function deleteMasterAddon(idx) {
+            if (confirm("Hapus add-on master ini?")) {
+                appState.addonList.splice(idx, 1);
+                saveStateToStorage();
+                renderMasterTables();
+            }
+        }
+
+        function saveFixedCost(e) {
+            e.preventDefault();
+            appState.fixedCost = {
+                gajiKaryawan: Number(document.getElementById('fcGajiKaryawan').value) || 0,
+                gajiDesainer: Number(document.getElementById('fcGajiDesainer').value) || 0,
+                operasional: Number(document.getElementById('fcOperasional').value) || 0
+            };
+            saveStateToStorage();
+            renderMasterTables();
+            renderCashFlow();
+            alert("Fixed Cost berhasil disimpan!");
+        }
+    </script>
+</body>
+</html>

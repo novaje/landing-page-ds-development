@@ -18,9 +18,18 @@ class DataPesanan extends Model
         'nama_team',
         'jenis_pesanan',
         'qty_pesanan',
-        'total_modal_pesanan',
-        'total_jual',
-        'sisa',
-        'status_pesanan'
+        'add_on_pesanan',
+        'dp_pembayaran',
+        'dp_masuk',
+        'tgl_selesai',
+        'tgl_pelunasan',
+        'nominal_pelunasan',
+        'status_order',        
+        'status_pesanan',
+        'total_order',
+        'harga_netto',
+        'total_hpp',
+        'laba_kotor',
+        'sisa_piutang'
     ];
 }

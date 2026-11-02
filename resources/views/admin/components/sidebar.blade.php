@@ -1,139 +1,67 @@
-<style>
-    .sidebar-heading {
-        list-style: none;
-        padding: 20px 20px 8px;
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 1.2px;
-        color: #94a3b8;
-        text-transform: uppercase;
-        pointer-events: none;
-    }
-
-    /* Judul kelompok pertama */
-    .sidebar-heading:first-child {
-        padding-top: 25px;
-    }
-
-    /* Pastikan judul tidak memiliki efek hover */
-    .sidebar-menu .sidebar-heading:hover {
-        background: transparent;
-    }
-</style>
-
-<aside id="sidebar">
-    <!-- BRAND -->
-    <div class="sidebar-brand">
-        <i class="fa-solid fa-store"></i>
-        <span>DS SPORT APPAREL</span>
+<aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-64 bg-slate-900 border-r border-slate-800 flex flex-col z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+    <div class="p-6 border-b border-slate-800/80 hidden md:flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-blue-500/20">DS</div>
+        <div>
+            <h1 class="font-extrabold text-base tracking-wider text-white leading-tight">DS SPORT</h1>
+            <p class="text-xs text-blue-400 font-medium">Apparel System V4</p>
+        </div>
     </div>
 
-    <ul class="sidebar-menu">
+    <nav class="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
+        <a href="{{ route('dashboard') }}" class="nav-link {{ request()->is('dashboard-admin') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all {{ request()->is('dashboard-admin') ? 'text-blue-400 bg-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/60' }}">
+            <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+        </a>
+        <a href="#" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+            <i class="fa-solid fa-cash-register w-5"></i> Kasir / POS
+        </a>
+        <a href="{{ route('datapesanan') }}" class="nav-link {{ request()->is('data-pesanan*') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all {{ request()->is('data-pesanan*') ? 'text-blue-400 bg-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/60' }}">
+            <i class="fa-solid fa-cart-shopping w-5"></i> Order & Transaksi
+        </a>
+        <a href="{{ route('dtProduk') }}" class="nav-link {{ request()->is('data-produk') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all {{ request()->is('data-produk') ? 'text-blue-400 bg-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/60' }}">
+            <i class="fa-solid fa-boxes-stacked w-5"></i> Produk & Stok
+        </a>
+        <a href="#" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+            <i class="fa-solid fa-users w-5"></i> Pelanggan
+        </a>
+        <a href="#" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+            <i class="fa-solid fa-wallet w-5"></i> Pembayaran
+        </a>
+        <a href="#" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+            <i class="fa-solid fa-truck-ramp-box w-5"></i> Pembelian & Pemasokan
+        </a>
+        <a href="#" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+            <i class="fa-solid fa-chart-pie w-5"></i> Laporan
+        </a>
 
-        <!-- MAIN MENU -->
-        <li class="sidebar-heading">MAIN MENU</li>
+        <a href="{{ route ('dtPaketJersey') }}" class="nav-link {{ request()->is('master-data-paket-jersey') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+            <i class="fa-solid fa-chart-pie w-5"></i> Master Data
+        </a>
+        
+        <div class="pt-4 pb-2 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Website</div>
+        
+        <a href="{{ route('beranda') }}" class="nav-link {{ request()->is('beranda-website') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all {{ request()->is('beranda-website') ? 'text-blue-400 bg-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/60' }}">
+            <i class="fa-solid fa-house w-5"></i> Beranda
+        </a>
+        <a href="{{ route('tentang') }}" class="nav-link {{ request()->is('tentang-website') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all {{ request()->is('tentang-website') ? 'text-blue-400 bg-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/60' }}">
+            <i class="fa-solid fa-circle-info w-5"></i> Tentang Kami
+        </a>
+        <a href="{{ route('koleksi') }}" class="nav-link {{ request()->is('koleksi-website') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all {{ request()->is('koleksi-website') ? 'text-blue-400 bg-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/60' }}">
+            <i class="fa-solid fa-shirt w-5"></i> Koleksi
+        </a>
+        <a href="{{ route('galeri') }}" class="nav-link {{ request()->is('galeri-website') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all {{ request()->is('galeri-website') ? 'text-blue-400 bg-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/60' }}">
+            <i class="fa-solid fa-images w-5"></i> Galeri
+        </a>
+        <a href="{{ route('klien') }}" class="nav-link {{ request()->is('klien-website') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all {{ request()->is('klien-website') ? 'text-blue-400 bg-blue-500/10 border border-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-800/60' }}">
+            <i class="fa-solid fa-handshake w-5"></i> Klien
+        </a>
+        <a href="#" class="nav-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+            <i class="fa-solid fa-envelope w-5"></i> Kontak
+        </a>
+    </nav>
 
-        <li class="{{ request()->is('dashboard-admin') ? 'active' : '' }}">
-            <a href="{{ route('dashboard') }}">
-                <i class="fa-solid fa-chart-line"></i>
-                <span>Dashboard</span>
-            </a>
-        </li>
-
-        <li class="{{ request()->is('kasir') ? 'active' : '' }}">
-            <a href="#">
-                <i class="fa-solid fa-cash-register"></i>
-                <span>Kasir / POS</span>
-            </a>
-        </li>
-
-        <li class="{{ request()->is('data-pesanan*') ? 'active' : '' }}">
-            <a href="{{ route('datapesanan') }}">
-                <i class="fa-solid fa-file-invoice"></i>
-                <span>Pesanan Custom</span>
-            </a>
-        </li>
-
-        <li class="{{ request()->is('produk-stok') ? 'active' : '' }}">
-            <a href="#">
-                <i class="fa-solid fa-boxes-stacked"></i>
-                <span>Produk & Stok</span>
-            </a>
-        </li>
-
-        <li class="{{ request()->is('pelanggan') ? 'active' : '' }}">
-            <a href="#">
-                <i class="fa-solid fa-users"></i>
-                <span>Pelanggan</span>
-            </a>
-        </li>
-
-        <li class="{{ request()->is('pembayaran') ? 'active' : '' }}">
-            <a href="#">
-                <i class="fa-solid fa-wallet"></i>
-                <span>Pembayaran</span>
-            </a>
-        </li>
-
-        <li class="{{ request()->is('pembelian') ? 'active' : '' }}">
-            <a href="#">
-                <i class="fa-solid fa-truck-ramp-box"></i>
-                <span>Pembelian & Pemasokan</span>
-            </a>
-        </li>
-
-        <li class="{{ request()->is('laporan') ? 'active' : '' }}">
-            <a href="#">
-                <i class="fa-solid fa-chart-pie"></i>
-                <span>Laporan</span>
-            </a>
-        </li>
-
-
-        <!-- WEBSITE -->
-        <li class="sidebar-heading">WEBSITE</li>
-
-        <li class="{{ request()->is('beranda-website') ? 'active' : '' }}">
-            <a href="{{ route('beranda') }}">
-                <i class="fa-solid fa-house"></i>
-                <span>Beranda</span>
-            </a>
-        </li>
-
-        <li class="{{ request()->is('tentang-website') ? 'active' : '' }}">
-            <a href="{{ route('tentang') }}">
-                <i class="fa-solid fa-circle-info"></i>
-                <span>Tentang Kami</span>
-            </a>
-        </li>
-
-        <li class="{{ request()->is('koleksi-website') ? 'active' : '' }}">
-            <a href="{{ route('koleksi') }}">
-                <i class="fa-solid fa-shirt"></i>
-                <span>Koleksi</span>
-            </a>
-        </li>
-
-        <li class="{{ request()->is('galeri-website') ? 'active' : '' }}">
-            <a href="{{ route('galeri') }}">
-                <i class="fa-solid fa-images"></i>
-                <span>Galeri</span>
-            </a>
-        </li>
-
-        <li class="{{ request()->is('klien-website') ? 'active' : '' }}">
-            <a href="{{ route('klien') }}">
-                <i class="fa-solid fa-handshake"></i>
-                <span>Klien</span>
-            </a>
-        </li>
-
-        <li class="{{ request()->is('kontak') ? 'active' : '' }}">
-            <a href="#">
-                <i class="fa-solid fa-envelope"></i>
-                <span>Kontak</span>
-            </a>
-        </li>
-
-    </ul>
+    <div class="p-4 border-t border-slate-800/80">
+        <button class="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-rose-900/30 hover:text-rose-400 text-xs text-slate-400 transition-colors flex items-center justify-center gap-2 border border-slate-700/50">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+    </div>
 </aside>

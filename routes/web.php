@@ -10,6 +10,9 @@ use App\Http\Controllers\website\KlienWebsiteController;
 use App\Http\Controllers\website\KontakWebsiteController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DataPesananController;
+use App\Http\Controllers\Admin\DataProdukController;
+use App\Http\Controllers\Admin\MasterDataPaketJerseyController;
+use App\Http\Controllers\Admin\MasterDataAddOnController;
 
 
 Route::get('/', function () {
@@ -63,3 +66,22 @@ Route::post('/data-pesanan', [DataPesananController::class, 'storePesanan'])->na
 Route::get('/data-pesanan/{id_pesanan}/edit', [DataPesananController::class, 'editPesanan'])->name('datapesanan.edit');
 Route::put('/data-pesanan/{id_pesanan}', [DataPesananController::class, 'updatePesanan'])->name('datapesanan.update');
 Route::delete('/data-pesanan/{id_pesanan}', [DataPesananController::class, 'destroyPesanan'])->name('datapesanan.destroy');
+
+// produk dan stok
+Route::get('/data-produk', [DataProdukController::class, 'dtProduk'])->name('dtProduk');
+Route::post('/data-produk', [DataProdukController::class, 'storeProduk'])->name('dtProduk.store');
+Route::get('/data-produk/{id_produk}/edit', [DataProdukController::class, 'editProduk'])->name('dtProduk.edit');
+Route::put('/data-produk/{id_produk}', [DataProdukController::class, 'updateProduk'])->name('dtProduk.update');
+Route::delete('/data-produk/{id_produk}', [DataProdukController::class, 'destroyProduk'])->name('dtProduk.destroy');
+
+// master data paket jersey
+Route::get('/master-data-paket-jersey', [MasterDataPaketJerseyController::class, 'dtPaketJersey'])->name('dtPaketJersey');
+Route::post('/master-data-paket-jersey', [MasterDataPaketJerseyController::class, 'storePaketJersey'])->name('storePaketJersey');
+Route::get('/master-data-paket-jersey/{id}/edit', [MasterDataPaketJerseyController::class, 'editPaketJersey'])->name('editPaketJersey');
+Route::put('/master-data-paket-jersey/{id}', [MasterDataPaketJerseyController::class, 'updatePaketJersey'])->name('updatePaketJersey');
+Route::delete('/master-data-paket-jersey/{id}', [MasterDataPaketJerseyController::class, 'deletePaketJersey'])->name('deletePaketJersey');
+
+// master data add-on
+Route::post('/master-data-add-on', [MasterDataAddOnController::class, 'storeAddOn'])->name('storeAddOn');
+Route::put('/master-data-add-on/{id}', [MasterDataAddOnController::class, 'updateAddOn'])->name('updateAddOn');
+Route::delete('/master-data-add-on/{id}', [MasterDataAddOnController::class, 'deleteAddOn'])->name('deleteAddOn');
